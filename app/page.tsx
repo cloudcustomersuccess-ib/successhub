@@ -1,139 +1,208 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Container,
   Typography,
+  Box,
+  Grid,
   Card,
   CardContent,
   CardActions,
   Button,
-  Box,
-  Chip,
-  TextField,
-  InputAdornment
+  alpha,
+  useTheme,
 } from '@mui/material';
-import { ContentCopy, OpenInNew, Search } from '@mui/icons-material';
-import { pagesConfig, getPageUrl } from '@/lib/pages-config';
+import {
+  RocketLaunch,
+  CloudQueue,
+  Factory,
+  Security,
+  Support,
+  TrendingUp,
+  ArrowForward,
+} from '@mui/icons-material';
+import Link from 'next/link';
+import { Callout } from '@/components/ui';
+
+const sections = [
+  {
+    icon: <RocketLaunch fontSize="large" />,
+    title: 'Onboarding',
+    description: 'Guías paso a paso para comenzar tu viaje en la nube con TD SYNNEX',
+    href: '/onboarding',
+    color: '#0066cc',
+  },
+  {
+    icon: <CloudQueue fontSize="large" />,
+    title: 'StreamOne ION',
+    description: 'Portal de gestión cloud completo para tus operaciones',
+    href: '/streamone-ion',
+    color: '#003031',
+  },
+  {
+    icon: <Factory fontSize="large" />,
+    title: 'Fabricantes',
+    description: 'Información y recursos de los principales fabricantes cloud',
+    href: '/fabricantes',
+    color: '#2e7d32',
+  },
+  {
+    icon: <Security fontSize="large" />,
+    title: 'Seguridad',
+    description: 'Mejores prácticas y herramientas de seguridad en la nube',
+    href: '/seguridad',
+    color: '#d32f2f',
+  },
+  {
+    icon: <Support fontSize="large" />,
+    title: 'Soporte',
+    description: 'Centro de ayuda y contacto con nuestro equipo de soporte',
+    href: '/soporte',
+    color: '#ed6c02',
+  },
+  {
+    icon: <TrendingUp fontSize="large" />,
+    title: 'Growth Lab',
+    description: 'Estrategias y herramientas para hacer crecer tu negocio cloud',
+    href: '/growth-lab',
+    color: '#9c27b0',
+  },
+];
 
 export default function Home() {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleCopyUrl = (pageId: string, path: string) => {
-    const url = getPageUrl(path);
-    navigator.clipboard.writeText(url);
-    setCopiedId(pageId);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  const filteredPages = pagesConfig.filter(page =>
-    page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    page.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    page.path.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const theme = useTheme();
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
-          SuccessHub - Índice de Páginas
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Listado de todas las páginas disponibles. Cada página es independiente y puede ser compartida individualmente con clientes.
-        </Typography>
-
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Buscar páginas..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ mt: 2 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {filteredPages.length === 0 ? (
-          <Card>
-            <CardContent>
-              <Typography variant="body1" color="text.secondary" align="center">
-                No se encontraron páginas que coincidan con tu búsqueda.
-              </Typography>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredPages.map((page) => (
-            <Card key={page.id} elevation={2} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)' } }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 2 }}>
-                  <Typography variant="h5" component="h2" fontWeight="600">
-                    {page.title}
-                  </Typography>
-                  <Chip
-                    label={page.id}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Box>
-
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {page.description}
-                </Typography>
-
-                <Box sx={{
-                  bgcolor: 'grey.100',
-                  p: 1.5,
-                  borderRadius: 1,
-                  fontFamily: 'monospace',
-                  fontSize: '0.875rem'
-                }}>
-                  <Typography variant="body2" color="text.primary">
-                    {getPageUrl(page.path)}
-                  </Typography>
-                </Box>
-              </CardContent>
-
-              <CardActions sx={{ px: 2, pb: 2 }}>
-                <Button
-                  size="small"
-                  startIcon={<OpenInNew />}
-                  href={page.path}
-                  variant="contained"
-                  sx={{ mr: 1 }}
-                >
-                  Abrir Página
-                </Button>
-                <Button
-                  size="small"
-                  startIcon={<ContentCopy />}
-                  onClick={() => handleCopyUrl(page.id, page.path)}
-                  variant="outlined"
-                  color={copiedId === page.id ? "success" : "primary"}
-                >
-                  {copiedId === page.id ? "¡Copiado!" : "Copiar URL"}
-                </Button>
-              </CardActions>
-            </Card>
-          ))
-        )}
-      </Box>
-
-      {filteredPages.length > 0 && (
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'info.light', borderRadius: 2 }}>
-          <Typography variant="body2" color="info.dark">
-            <strong>Total de páginas:</strong> {filteredPages.length} {searchTerm && `(filtradas de ${pagesConfig.length})`}
+    <Box>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          py: 8,
+          mb: 6,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Typography
+            variant="h2"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+            sx={{ mb: 2 }}
+          >
+            Bienvenido al Cloud Customer Success Hub
           </Typography>
+          <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800 }}>
+            Tu centro de recursos, conocimiento y herramientas para el éxito en soluciones
+            cloud
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              bgcolor: 'white',
+              color: 'primary.main',
+              '&:hover': {
+                bgcolor: alpha('#ffffff', 0.9),
+              },
+            }}
+            endIcon={<ArrowForward />}
+            component={Link}
+            href="/onboarding"
+          >
+            Comenzar Ahora
+          </Button>
+        </Container>
+      </Box>
+
+      {/* Main Content */}
+      <Container maxWidth="lg" sx={{ pb: 8 }}>
+        {/* Intro Callout */}
+        <Callout type="info" title="¿Qué encontrarás aquí?">
+          Este hub centraliza todos los recursos que necesitas para maximizar el valor de
+          tus soluciones cloud. Desde guías de inicio hasta herramientas avanzadas de
+          gestión, todo en un solo lugar.
+        </Callout>
+
+        {/* Sections Grid */}
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          {sections.map((section) => (
+            <Grid item xs={12} sm={6} md={4} key={section.href}>
+              <Card
+                elevation={2}
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: theme.shadows[8],
+                  },
+                }}
+              >
+                <CardContent sx={{ flex: 1 }}>
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 2,
+                      bgcolor: alpha(section.color, 0.1),
+                      color: section.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 2,
+                    }}
+                  >
+                    {section.icon}
+                  </Box>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    {section.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {section.description}
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ p: 2, pt: 0 }}>
+                  <Button
+                    component={Link}
+                    href={section.href}
+                    endIcon={<ArrowForward />}
+                    fullWidth
+                    variant="outlined"
+                  >
+                    Explorar
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* Additional Info */}
+        <Box sx={{ mt: 6 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Callout type="tip" title="¿Necesitas ayuda?">
+                Nuestro equipo de Cloud Customer Success está disponible para ayudarte.
+                Visita la sección de{' '}
+                <Link href="/soporte" style={{ color: 'inherit', fontWeight: 'bold' }}>
+                  Soporte
+                </Link>{' '}
+                para contactarnos.
+              </Callout>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Callout type="success" title="Nuevo contenido">
+                Actualizamos regularmente este hub con nuevos recursos, guías y mejores
+                prácticas. Revisa frecuentemente para mantenerte al día.
+              </Callout>
+            </Grid>
+          </Grid>
         </Box>
-      )}
-    </Container>
+      </Container>
+    </Box>
   );
 }
