@@ -12,8 +12,8 @@ import {
   useTheme,
   Chip,
   Paper,
+  Grid,
 } from '@mui/material';
-import { Unstable_Grid2 as Grid } from '@mui/material';
 import {
   RocketLaunch,
   CloudQueue,
@@ -373,7 +373,7 @@ export default function Home() {
           >
             <Grid container spacing={4}>
               {stats.map((stat, index) => (
-                <Grid xs={12} sm={6} md={3} key={index}>
+                <Grid item xs={12} sm={6} md={3} key={index}>
                   <motion.div variants={scaleIn}>
                     <Paper
                       elevation={0}
@@ -455,7 +455,7 @@ export default function Home() {
           >
             <Grid container spacing={4}>
               {features.map((feature, index) => (
-                <Grid xs={12} sm={6} key={index}>
+                <Grid item xs={12} sm={6} key={index}>
                   <motion.div variants={fadeInUp}>
                     <Card
                       elevation={0}
@@ -552,7 +552,7 @@ export default function Home() {
           >
             <Grid container spacing={3}>
               {sections.map((section, index) => (
-                <Grid xs={12} sm={6} md={4} key={section.href}>
+                <Grid item xs={12} sm={6} md={4} key={section.href}>
                   <motion.div variants={scaleIn} whileHover={{ scale: 1.03 }}>
                     <Card
                       component={Link}
