@@ -12,7 +12,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Unstable_Grid2 as Grid } from '@mui/material';
 import {
   RocketLaunch,
   CloudQueue,
