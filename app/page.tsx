@@ -1,65 +1,139 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Box,
+  Chip,
+  TextField,
+  InputAdornment
+} from '@mui/material';
+import { ContentCopy, OpenInNew, Search } from '@mui/icons-material';
+import { pagesConfig, getPageUrl } from '@/lib/pages-config';
 
 export default function Home() {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleCopyUrl = (pageId: string, path: string) => {
+    const url = getPageUrl(path);
+    navigator.clipboard.writeText(url);
+    setCopiedId(pageId);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const filteredPages = pagesConfig.filter(page =>
+    page.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    page.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    page.path.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+          SuccessHub - Índice de Páginas
+        </Typography>
+        <Typography variant="body1" color="text.secondary" paragraph>
+          Listado de todas las páginas disponibles. Cada página es independiente y puede ser compartida individualmente con clientes.
+        </Typography>
+
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Buscar páginas..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ mt: 2 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </Box>
+
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {filteredPages.length === 0 ? (
+          <Card>
+            <CardContent>
+              <Typography variant="body1" color="text.secondary" align="center">
+                No se encontraron páginas que coincidan con tu búsqueda.
+              </Typography>
+            </CardContent>
+          </Card>
+        ) : (
+          filteredPages.map((page) => (
+            <Card key={page.id} elevation={2} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)' } }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 2 }}>
+                  <Typography variant="h5" component="h2" fontWeight="600">
+                    {page.title}
+                  </Typography>
+                  <Chip
+                    label={page.id}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Box>
+
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {page.description}
+                </Typography>
+
+                <Box sx={{
+                  bgcolor: 'grey.100',
+                  p: 1.5,
+                  borderRadius: 1,
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem'
+                }}>
+                  <Typography variant="body2" color="text.primary">
+                    {getPageUrl(page.path)}
+                  </Typography>
+                </Box>
+              </CardContent>
+
+              <CardActions sx={{ px: 2, pb: 2 }}>
+                <Button
+                  size="small"
+                  startIcon={<OpenInNew />}
+                  href={page.path}
+                  variant="contained"
+                  sx={{ mr: 1 }}
+                >
+                  Abrir Página
+                </Button>
+                <Button
+                  size="small"
+                  startIcon={<ContentCopy />}
+                  onClick={() => handleCopyUrl(page.id, page.path)}
+                  variant="outlined"
+                  color={copiedId === page.id ? "success" : "primary"}
+                >
+                  {copiedId === page.id ? "¡Copiado!" : "Copiar URL"}
+                </Button>
+              </CardActions>
+            </Card>
+          ))
+        )}
+      </Box>
+
+      {filteredPages.length > 0 && (
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'info.light', borderRadius: 2 }}>
+          <Typography variant="body2" color="info.dark">
+            <strong>Total de páginas:</strong> {filteredPages.length} {searchTerm && `(filtradas de ${pagesConfig.length})`}
+          </Typography>
+        </Box>
+      )}
+    </Container>
   );
 }

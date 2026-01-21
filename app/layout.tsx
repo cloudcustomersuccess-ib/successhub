@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ThemeRegistry from "@/lib/theme-registry";
 
 export const metadata: Metadata = {
   title: "SuccessHub",
@@ -9,9 +10,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body style={{ margin: 0 }}>
-        <main style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
+        <ThemeRegistry>
           {children}
-        </main>
+        </ThemeRegistry>
       </body>
     </html>
   );
