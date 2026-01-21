@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import StickyScrollWords from '@/components/sticky-scroll-words';
 
 // Declaración de tipos para Vanta.js
 declare global {
@@ -353,6 +354,9 @@ export default function Home() {
           </motion.div>
         </Box>
       </Box>
+
+      {/* Sticky Scroll Words Section */}
+      <StickyScrollWords />
 
       {/* Stats Section */}
       <Box
