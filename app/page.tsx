@@ -4,7 +4,6 @@ import {
   Container,
   Typography,
   Box,
-  Grid,
   Card,
   CardContent,
   CardActions,
@@ -12,6 +11,7 @@ import {
   alpha,
   useTheme,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import {
   RocketLaunch,
   CloudQueue,
@@ -128,7 +128,7 @@ export default function Home() {
         {/* Sections Grid */}
         <Grid container spacing={3} sx={{ mt: 2 }}>
           {sections.map((section) => (
-            <Grid item xs={12} sm={6} md={4} key={section.href}>
+            <Grid xs={12} sm={6} md={4} key={section.href}>
               <Card
                 elevation={2}
                 sx={{
@@ -184,7 +184,7 @@ export default function Home() {
         {/* Additional Info */}
         <Box sx={{ mt: 6 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <Callout type="tip" title="¿Necesitas ayuda?">
                 Nuestro equipo de Cloud Customer Success está disponible para ayudarte.
                 Visita la sección de{' '}
@@ -194,7 +194,7 @@ export default function Home() {
                 para contactarnos.
               </Callout>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <Callout type="success" title="Nuevo contenido">
                 Actualizamos regularmente este hub con nuevos recursos, guías y mejores
                 prácticas. Revisa frecuentemente para mantenerte al día.

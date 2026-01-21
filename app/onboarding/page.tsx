@@ -4,11 +4,11 @@ import {
   Container,
   Typography,
   Box,
-  Grid,
   Card,
   CardContent,
   Button,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import { RocketLaunch, Article, VideoLibrary, School } from '@mui/icons-material';
 import { Callout, SectionHeader } from '@/components/ui';
 
@@ -27,7 +27,7 @@ export default function OnboardingPage() {
       </Callout>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Card elevation={2}>
             <CardContent>
               <Box sx={{ mb: 2, color: 'primary.main' }}>
@@ -46,7 +46,7 @@ export default function OnboardingPage() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Card elevation={2}>
             <CardContent>
               <Box sx={{ mb: 2, color: 'primary.main' }}>
@@ -65,7 +65,7 @@ export default function OnboardingPage() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Card elevation={2}>
             <CardContent>
               <Box sx={{ mb: 2, color: 'primary.main' }}>
