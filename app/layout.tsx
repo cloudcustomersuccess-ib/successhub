@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ThemeRegistry from "@/lib/theme-registry";
 import GlobalHeader from "@/components/global-header";
+import LenisWrapper from "@/components/lenis-wrapper";
 import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
@@ -17,12 +18,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ margin: 0 }}>
         <ThemeRegistry>
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <GlobalHeader />
-            <Box component="main" sx={{ flex: 1 }}>
-              {children}
+          <LenisWrapper>
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <GlobalHeader />
+              <Box component="main" sx={{ flex: 1 }}>
+                {children}
+              </Box>
             </Box>
-          </Box>
+          </LenisWrapper>
         </ThemeRegistry>
       </body>
     </html>
