@@ -36,14 +36,14 @@ const getTheme = (mode: PaletteMode) =>
         main: mode === 'light' ? '#0066cc' : '#4da6ff',
       },
       background: {
-        default: mode === 'light' ? '#f5f7fa' : '#0a1929',
-        paper: mode === 'light' ? '#ffffff' : '#132f4c',
+        default: mode === 'light' ? '#f5f7fa' : '#121212',
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
       },
       text: {
         primary: mode === 'light' ? '#1a1a1a' : '#ffffff',
-        secondary: mode === 'light' ? '#5f6368' : '#b0bec5',
+        secondary: mode === 'light' ? '#5f6368' : '#b0b0b0',
       },
-      divider: mode === 'light' ? '#e0e0e0' : '#1e3a5f',
+      divider: mode === 'light' ? '#e0e0e0' : '#2c2c2c',
     },
     typography: {
       fontFamily: [

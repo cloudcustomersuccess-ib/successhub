@@ -4,7 +4,6 @@ import {
   Container,
   Typography,
   Box,
-  Grid,
   Card,
   CardContent,
   CardHeader,
@@ -19,6 +18,7 @@ import {
   Divider,
   Button
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import {
   TrendingUp,
   Assessment,
@@ -120,7 +120,7 @@ export default function CustomerDashboard() {
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {statsCards.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid xs={12} sm={6} md={3} key={index}>
             <Card elevation={2}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -150,7 +150,7 @@ export default function CustomerDashboard() {
 
       <Grid container spacing={3}>
         {/* Recent Activities */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Card elevation={2}>
             <CardHeader
               title="Actividad Reciente"
@@ -200,7 +200,7 @@ export default function CustomerDashboard() {
         </Grid>
 
         {/* Project Progress */}
-        <Grid item xs={12} md={6}>
+        <Grid xs={12} md={6}>
           <Card elevation={2}>
             <CardHeader
               title="Progreso de Proyectos"
@@ -233,7 +233,7 @@ export default function CustomerDashboard() {
         </Grid>
 
         {/* Info Card */}
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Paper elevation={2} sx={{ p: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Página de Ejemplo con Material UI

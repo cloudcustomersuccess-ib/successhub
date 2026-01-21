@@ -32,7 +32,6 @@ const navigationItems = [
   { label: 'Onboarding', href: '/onboarding' },
   { label: 'StreamOne ION', href: '/streamone-ion' },
   { label: 'Fabricantes', href: '/fabricantes' },
-  { label: 'Seguridad', href: '/seguridad' },
   { label: 'Soporte', href: '/soporte' },
   { label: 'Growth Lab', href: '/growth-lab' },
 ];
@@ -128,7 +127,7 @@ export default function GlobalHeader() {
                 whiteSpace: 'nowrap',
               }}
             >
-              Cloud Customer Success
+              CX
             </Typography>
           </Box>
 
