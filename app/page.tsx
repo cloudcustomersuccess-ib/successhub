@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -16,13 +17,22 @@ import {
   RocketLaunch,
   CloudQueue,
   Factory,
-  Security,
   Support,
   TrendingUp,
   ArrowForward,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { Callout } from '@/components/ui';
+
+// Declaración de tipos para Vanta.js
+declare global {
+  interface Window {
+    VANTA?: {
+      FOG: (options: any) => any;
+    };
+    THREE?: any;
+  }
+}
 
 const sections = [
   {
@@ -47,13 +57,6 @@ const sections = [
     color: '#2e7d32',
   },
   {
-    icon: <Security fontSize="large" />,
-    title: 'Seguridad',
-    description: 'Mejores prácticas y herramientas de seguridad en la nube',
-    href: '/seguridad',
-    color: '#d32f2f',
-  },
-  {
     icon: <Support fontSize="large" />,
     title: 'Soporte',
     description: 'Centro de ayuda y contacto con nuestro equipo de soporte',
@@ -71,29 +74,79 @@ const sections = [
 
 export default function Home() {
   const theme = useTheme();
+  const vantaRef = useRef<HTMLDivElement>(null);
+  const vantaEffect = useRef<any>(null);
+
+  useEffect(() => {
+    if (!vantaEffect.current && vantaRef.current) {
+      const initVanta = () => {
+        if (window.VANTA && window.THREE) {
+          vantaEffect.current = window.VANTA.FOG({
+            el: vantaRef.current,
+            THREE: window.THREE,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.0,
+            minWidth: 200.0,
+            highlightColor: 0x603b,
+            midtoneColor: 0x56a53,
+            lowlightColor: 0x86351,
+            baseColor: 0x4332b,
+            blurFactor: 0.45,
+            speed: 1.5,
+            zoom: 2.0,
+          });
+        }
+      };
+
+      // Esperar a que los scripts se carguen
+      if (window.VANTA && window.THREE) {
+        initVanta();
+      } else {
+        const checkVanta = setInterval(() => {
+          if (window.VANTA && window.THREE) {
+            clearInterval(checkVanta);
+            initVanta();
+          }
+        }, 100);
+
+        return () => clearInterval(checkVanta);
+      }
+    }
+
+    return () => {
+      if (vantaEffect.current) {
+        vantaEffect.current.destroy();
+      }
+    };
+  }, []);
 
   return (
     <Box>
       {/* Hero Section */}
       <Box
+        ref={vantaRef}
         sx={{
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          py: 8,
+          height: '70vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
           mb: 6,
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Typography
             variant="h2"
             component="h1"
             fontWeight="bold"
             gutterBottom
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, color: 'white' }}
           >
             Bienvenido al Cloud Customer Success Hub
           </Typography>
-          <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800 }}>
+          <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, color: 'white' }}>
             Tu centro de recursos, conocimiento y herramientas para el éxito en soluciones
             cloud
           </Typography>
