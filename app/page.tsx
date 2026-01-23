@@ -119,7 +119,7 @@ const features = [
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0, 0, 0.2, 1] } },
 };
 
 const staggerContainer = {
@@ -137,7 +137,7 @@ const scaleIn = {
   visible: {
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.5, ease: 'easeOut' }
+    transition: { duration: 0.5, ease: [0, 0, 0.2, 1] }
   },
 };
 
@@ -377,7 +377,7 @@ export default function Home() {
           >
             <Grid container spacing={4}>
               {stats.map((stat, index) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
+                <Grid xs={12} sm={6} md={3} key={index}>
                   <motion.div variants={scaleIn}>
                     <Paper
                       elevation={0}
@@ -459,7 +459,7 @@ export default function Home() {
           >
             <Grid container spacing={4}>
               {features.map((feature, index) => (
-                <Grid item xs={12} sm={6} key={index}>
+                <Grid xs={12} sm={6} key={index}>
                   <motion.div variants={fadeInUp}>
                     <Card
                       elevation={0}
@@ -556,7 +556,7 @@ export default function Home() {
           >
             <Grid container spacing={3}>
               {sections.map((section, index) => (
-                <Grid item xs={12} sm={6} md={4} key={section.href}>
+                <Grid xs={12} sm={6} md={4} key={section.href}>
                   <motion.div variants={scaleIn} whileHover={{ scale: 1.03 }}>
                     <Card
                       component={Link}
