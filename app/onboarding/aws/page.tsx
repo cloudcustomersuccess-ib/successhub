@@ -62,6 +62,7 @@ import { guideData } from './data';
 interface StepState {
   id: string;
   completed: boolean;
+  inView: boolean;
 }
 
 // Helper function to get icon for note type
@@ -95,6 +96,7 @@ export default function AWSOnboardingPage() {
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const stepRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const prevScrollY = useRef(0);
 
   // Initialize state from localStorage
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function AWSOnboardingPage() {
     } else {
       const initialStates = guideData.steps
         .filter(s => s.id.includes('.'))
-        .map(s => ({ id: s.id, completed: false }));
+        .map(s => ({ id: s.id, completed: false, inView: false }));
       setStepStates(initialStates);
     }
     setLoading(false);
@@ -117,7 +119,7 @@ export default function AWSOnboardingPage() {
     }
   }, [stepStates]);
 
-  // Intersection Observer for scroll spy
+  // Intersection Observer for scroll spy and auto-complete
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
@@ -126,11 +128,29 @@ export default function AWSOnboardingPage() {
       if (element) {
         const observer = new IntersectionObserver(
           ([entry]) => {
+            const currentScrollY = window.scrollY;
+            const isScrollingDown = currentScrollY > prevScrollY.current;
+            prevScrollY.current = currentScrollY;
+
             if (entry.isIntersecting) {
               setActiveStep(key);
+
+              // Mark as completed when scrolling down and element is in view
+              if (isScrollingDown && entry.intersectionRatio > 0.6) {
+                setStepStates(prev =>
+                  prev.map(s => s.id === key ? { ...s, completed: true, inView: true } : s)
+                );
+              }
+            } else {
+              // Unmark as completed when scrolling up and element is out of view (above viewport)
+              if (!isScrollingDown && entry.boundingClientRect.top > 0) {
+                setStepStates(prev =>
+                  prev.map(s => s.id === key ? { ...s, completed: false, inView: false } : s)
+                );
+              }
             }
           },
-          { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
+          { threshold: [0, 0.3, 0.6, 1], rootMargin: '-100px 0px -20% 0px' }
         );
         observer.observe(element);
         observers.push(observer);
@@ -140,17 +160,11 @@ export default function AWSOnboardingPage() {
     return () => observers.forEach(o => o.disconnect());
   }, [loading]);
 
-  const toggleStepCompletion = (stepId: string) => {
-    setStepStates(prev =>
-      prev.map(s => s.id === stepId ? { ...s, completed: !s.completed } : s)
-    );
-  };
-
   const resetProgress = () => {
     if (confirm('¿Estás seguro de que quieres reiniciar todo el progreso?')) {
       const initialStates = guideData.steps
         .filter(s => s.id.includes('.'))
-        .map(s => ({ id: s.id, completed: false }));
+        .map(s => ({ id: s.id, completed: false, inView: false }));
       setStepStates(initialStates);
       localStorage.removeItem('aws-onboarding-progress');
     }
@@ -177,11 +191,6 @@ export default function AWSOnboardingPage() {
         maxHeight: 'calc(100vh - 140px)',
         overflowY: 'auto',
         pr: 2,
-        '&::-webkit-scrollbar': { width: '6px' },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(0,0,0,0.2)',
-          borderRadius: '3px',
-        },
       }}
     >
       <Typography variant="h6" fontWeight={700} mb={2}>
@@ -194,13 +203,13 @@ export default function AWSOnboardingPage() {
           return (
             <ListItem
               key={step.id}
-              button
               onClick={() => scrollToStep(step.id)}
               sx={{
                 borderRadius: 2,
                 mb: 0.5,
                 bgcolor: isActive ? 'primary.main' : 'transparent',
                 color: isActive ? 'white' : 'text.primary',
+                cursor: 'pointer',
                 '&:hover': {
                   bgcolor: isActive ? 'primary.dark' : 'action.hover',
                 },
@@ -251,7 +260,39 @@ export default function AWSOnboardingPage() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box
+        sx={{
+          bgcolor: 'background.default',
+          minHeight: '100vh',
+          // Custom scrollbar styles
+          '& *': {
+            scrollbarWidth: 'thin',
+            scrollbarColor: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '#005657 rgba(0,0,0,0.1)'
+                : '#003031 rgba(0,0,0,0.05)',
+          },
+          '& *::-webkit-scrollbar': {
+            width: '8px',
+            height: '8px',
+          },
+          '& *::-webkit-scrollbar-track': {
+            background: (theme) =>
+              theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
+            borderRadius: '10px',
+          },
+          '& *::-webkit-scrollbar-thumb': {
+            background: (theme) =>
+              theme.palette.mode === 'dark' ? '#005657' : '#003031',
+            borderRadius: '10px',
+            transition: 'background 0.3s ease',
+            '&:hover': {
+              background: (theme) =>
+                theme.palette.mode === 'dark' ? '#006868' : '#004445',
+            },
+          },
+        }}
+      >
         {/* Sticky Progress Bar */}
         <Box
           sx={{
@@ -464,58 +505,88 @@ export default function AWSOnboardingPage() {
                 return (
                   <motion.div
                     key={step.id}
-                    ref={el => (stepRefs.current[step.id] = el)}
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-100px' }}
-                    transition={{ duration: 0.5 }}
+                    ref={el => { if (el) stepRefs.current[step.id] = el; }}
+                    initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, margin: '-80px' }}
+                    transition={{
+                      duration: 0.6,
+                      ease: [0.22, 1, 0.36, 1],
+                      opacity: { duration: 0.4 },
+                    }}
                   >
                     <Card
                       sx={{
                         mb: 4,
                         border: '2px solid',
                         borderColor: state?.completed ? 'success.main' : 'divider',
-                        bgcolor: state?.completed ? 'success.light' : 'background.paper',
-                        transition: 'all 0.3s ease',
+                        bgcolor: 'background.paper',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                         '&:hover': {
-                          boxShadow: 6,
-                          transform: 'translateY(-4px)',
+                          boxShadow: 8,
+                          transform: 'translateY(-6px)',
+                          borderColor: state?.completed ? 'success.dark' : 'primary.main',
                         },
+                        '&::before': state?.completed
+                          ? {
+                              content: '""',
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: '4px',
+                              background:
+                                'linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%)',
+                              backgroundSize: '200% 100%',
+                              animation: 'shimmer 3s ease-in-out infinite',
+                              '@keyframes shimmer': {
+                                '0%': { backgroundPosition: '200% 0' },
+                                '100%': { backgroundPosition: '-200% 0' },
+                              },
+                            }
+                          : {},
                       }}
                     >
                       <CardContent sx={{ p: { xs: 3, md: 4 } }}>
                         {/* Step Header */}
-                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 3 }}>
-                          <Box sx={{ flex: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, flexWrap: 'wrap' }}>
-                              <Typography variant="h4" fontWeight={700}>
-                                {step.title}
-                              </Typography>
-                              {step.meta?.badge_or_tag && (
-                                <Chip
-                                  icon={step.meta.badge_or_tag.includes('Tú') ? <PersonOutline /> : <Business />}
-                                  label={step.meta.badge_or_tag}
-                                  size="small"
-                                  color={step.meta.badge_or_tag.includes('TD SYNNEX') ? 'secondary' : 'primary'}
-                                  variant="outlined"
-                                />
-                              )}
-                            </Box>
-                            <Typography variant="body1" color="text.secondary" paragraph>
-                              {step.summary}
+                        <Box sx={{ mb: 3 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, flexWrap: 'wrap' }}>
+                            <Typography variant="h4" fontWeight={700}>
+                              {step.title}
                             </Typography>
-                          </Box>
-                          <IconButton
-                            onClick={() => toggleStepCompletion(step.id)}
-                            color={state?.completed ? 'success' : 'default'}
-                            sx={{ mt: 0.5 }}
-                          >
-                            {state?.completed ? (
-                              <CheckCircle fontSize="large" />
-                            ) : (
-                              <RadioButtonUnchecked fontSize="large" />
+                            {step.meta?.badge_or_tag && (
+                              <Chip
+                                icon={step.meta.badge_or_tag.includes('Tú') ? <PersonOutline /> : <Business />}
+                                label={step.meta.badge_or_tag}
+                                size="small"
+                                color={step.meta.badge_or_tag.includes('TD SYNNEX') ? 'secondary' : 'primary'}
+                                variant="outlined"
+                              />
                             )}
-                          </IconButton>
+                            {state?.completed && (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                              >
+                                <Chip
+                                  icon={<CheckCircle />}
+                                  label="Completado"
+                                  size="small"
+                                  color="success"
+                                  sx={{
+                                    fontWeight: 600,
+                                    boxShadow: '0 0 12px rgba(16, 185, 129, 0.3)',
+                                  }}
+                                />
+                              </motion.div>
+                            )}
+                          </Box>
+                          <Typography variant="body1" color="text.secondary" paragraph>
+                            {step.summary}
+                          </Typography>
                         </Box>
 
                         {/* Prerequisites */}
@@ -683,25 +754,6 @@ export default function AWSOnboardingPage() {
                             ))}
                           </Box>
                         )}
-
-                        {/* Mark as Complete Button */}
-                        <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-                          <Button
-                            variant={state?.completed ? 'outlined' : 'contained'}
-                            color={state?.completed ? 'success' : 'primary'}
-                            startIcon={state?.completed ? <CheckCircle /> : <RadioButtonUnchecked />}
-                            onClick={() => toggleStepCompletion(step.id)}
-                            fullWidth
-                            sx={{
-                              py: 1.5,
-                              fontSize: '1rem',
-                              fontWeight: 600,
-                              bgcolor: state?.completed ? 'transparent' : undefined,
-                            }}
-                          >
-                            {state?.completed ? 'Paso completado' : 'Marcar como completado'}
-                          </Button>
-                        </Box>
                       </CardContent>
                     </Card>
                   </motion.div>
