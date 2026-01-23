@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Box,
   Container,
   Typography,
   Button,
   Chip,
+  alpha,
   LinearProgress,
   Card,
   CardContent,
@@ -55,8 +56,12 @@ import {
   PersonOutline,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
-import theme from './theme';
-import { guideData } from './data';
+import { useLanguage } from '@/lib/i18n/language-provider';
+import { useThemeMode } from '@/lib/theme-registry';
+import createAwsTheme from './theme';
+import { guideData as guideDataEs } from './data';
+import { guideData as guideDataEn } from './data.en';
+import { guideData as guideDataPt } from './data.pt';
 
 // Types
 interface StepState {
@@ -89,35 +94,113 @@ const getNoteColor = (type: string) => {
   }
 };
 
+const guideDataByLocale = {
+  es: guideDataEs,
+  en: guideDataEn,
+  pt: guideDataPt,
+};
+
+type StepOwner = 'client' | 'tdsynnex';
+
+const ownerByStepId: Record<string, StepOwner> = {
+  '1.1': 'client',
+  '1.2': 'tdsynnex',
+  '1.3': 'client',
+  '1.4': 'tdsynnex',
+  '2.1': 'client',
+  '2.2': 'client',
+  '2.3': 'client',
+  '2.4': 'client',
+  '2.5': 'client',
+  '3.1': 'client',
+  '3.2': 'tdsynnex',
+  '3.3': 'client',
+  '3.4': 'tdsynnex',
+};
+
+const uiTextByLocale = {
+  es: {
+    contentsTitle: 'Contenido',
+    resetProgress: 'Reiniciar progreso',
+    resetConfirm: '¿Estás seguro de que quieres reiniciar todo el progreso?',
+    progressTitle: 'Progreso del Onboarding',
+    progressCompleted: 'completados',
+    backToOnboarding: 'Volver a Onboarding',
+    estimatedTime: '5-7 días laborables',
+    difficulty: 'Dificultad: Media',
+    stepsCompleted: 'pasos completados',
+    prerequisites: 'Requisitos previos',
+    documents: 'Documentos necesarios',
+    expectedEmail: 'Correo electrónico esperado',
+    completionTitle: '¡Felicidades!',
+    completionMessage:
+      'Has completado exitosamente el proceso de onboarding de Amazon Web Services con TD SYNNEX.',
+    stepPrefix: 'Paso',
+  },
+  en: {
+    contentsTitle: 'Contents',
+    resetProgress: 'Reset progress',
+    resetConfirm: 'Are you sure you want to reset all progress?',
+    progressTitle: 'Onboarding progress',
+    progressCompleted: 'completed',
+    backToOnboarding: 'Back to Onboarding',
+    estimatedTime: '5-7 business days',
+    difficulty: 'Difficulty: Medium',
+    stepsCompleted: 'steps completed',
+    prerequisites: 'Prerequisites',
+    documents: 'Required documents',
+    expectedEmail: 'Expected email',
+    completionTitle: 'Congratulations!',
+    completionMessage:
+      'You have successfully completed the Amazon Web Services onboarding process with TD SYNNEX.',
+    stepPrefix: 'Step',
+  },
+  pt: {
+    contentsTitle: 'Conteúdo',
+    resetProgress: 'Reiniciar progresso',
+    resetConfirm: 'Tens a certeza de que queres reiniciar todo o progresso?',
+    progressTitle: 'Progresso do Onboarding',
+    progressCompleted: 'concluídos',
+    backToOnboarding: 'Voltar ao Onboarding',
+    estimatedTime: '5-7 dias úteis',
+    difficulty: 'Dificuldade: Média',
+    stepsCompleted: 'passos concluídos',
+    prerequisites: 'Requisitos prévios',
+    documents: 'Documentos necessários',
+    expectedEmail: 'Email esperado',
+    completionTitle: 'Parabéns!',
+    completionMessage:
+      'Concluíste com sucesso o processo de onboarding de Amazon Web Services com a TD SYNNEX.',
+    stepPrefix: 'Passo',
+  },
+};
+
 export default function AWSOnboardingPage() {
+  const { language } = useLanguage();
+  const { mode } = useThemeMode();
+  const awsTheme = useMemo(() => createAwsTheme(mode), [mode]);
   const [stepStates, setStepStates] = useState<StepState[]>([]);
   const [activeStep, setActiveStep] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(awsTheme.breakpoints.down('md'));
   const stepRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const prevScrollY = useRef(0);
-
-  // Initialize state from localStorage
-  useEffect(() => {
-    const savedStates = localStorage.getItem('aws-onboarding-progress');
-    if (savedStates) {
-      setStepStates(JSON.parse(savedStates));
-    } else {
-      const initialStates = guideData.steps
+  const guideData = guideDataByLocale[language];
+  const uiText = uiTextByLocale[language];
+  const initialStepStates = useMemo(
+    () =>
+      guideData.steps
         .filter(s => s.id.includes('.'))
-        .map(s => ({ id: s.id, completed: false, inView: false }));
-      setStepStates(initialStates);
-    }
-    setLoading(false);
-  }, []);
+        .map(s => ({ id: s.id, completed: false, inView: false })),
+    [guideData]
+  );
 
-  // Save to localStorage whenever state changes
+  // Initialize state (no persistence)
   useEffect(() => {
-    if (stepStates.length > 0) {
-      localStorage.setItem('aws-onboarding-progress', JSON.stringify(stepStates));
-    }
-  }, [stepStates]);
+    setStepStates(initialStepStates);
+    setLoading(false);
+  }, [initialStepStates]);
 
   // Intersection Observer for scroll spy and auto-complete
   useEffect(() => {
@@ -130,27 +213,42 @@ export default function AWSOnboardingPage() {
           ([entry]) => {
             const currentScrollY = window.scrollY;
             const isScrollingDown = currentScrollY > prevScrollY.current;
+            const isScrollingUp = currentScrollY < prevScrollY.current;
             prevScrollY.current = currentScrollY;
 
             if (entry.isIntersecting) {
               setActiveStep(key);
-
-              // Mark as completed when scrolling down and element is in view
-              if (isScrollingDown && entry.intersectionRatio > 0.6) {
-                setStepStates(prev =>
-                  prev.map(s => s.id === key ? { ...s, completed: true, inView: true } : s)
-                );
-              }
-            } else {
-              // Unmark as completed when scrolling up and element is out of view (above viewport)
-              if (!isScrollingDown && entry.boundingClientRect.top > 0) {
-                setStepStates(prev =>
-                  prev.map(s => s.id === key ? { ...s, completed: false, inView: false } : s)
-                );
-              }
             }
+
+            setStepStates(prev =>
+              prev.map(s => {
+                if (s.id !== key) return s;
+                let completed = s.completed;
+                if (entry.isIntersecting) {
+                  if (isScrollingDown) {
+                    completed = true;
+                  }
+                  if (isScrollingUp) {
+                    completed = false;
+                  }
+                } else {
+                  const isAboveViewport = entry.boundingClientRect.bottom <= 0;
+                  const isBelowViewport = entry.boundingClientRect.top >= window.innerHeight;
+                  if (isScrollingDown && isAboveViewport) {
+                    completed = true;
+                  }
+                  if (isScrollingUp && isBelowViewport) {
+                    completed = false;
+                  }
+                }
+                if (s.inView === entry.isIntersecting && s.completed === completed) {
+                  return s;
+                }
+                return { ...s, completed, inView: entry.isIntersecting };
+              })
+            );
           },
-          { threshold: [0, 0.3, 0.6, 1], rootMargin: '-100px 0px -20% 0px' }
+          { threshold: 0, rootMargin: '0px' }
         );
         observer.observe(element);
         observers.push(observer);
@@ -161,12 +259,8 @@ export default function AWSOnboardingPage() {
   }, [loading]);
 
   const resetProgress = () => {
-    if (confirm('¿Estás seguro de que quieres reiniciar todo el progreso?')) {
-      const initialStates = guideData.steps
-        .filter(s => s.id.includes('.'))
-        .map(s => ({ id: s.id, completed: false, inView: false }));
-      setStepStates(initialStates);
-      localStorage.removeItem('aws-onboarding-progress');
+    if (confirm(uiText.resetConfirm)) {
+      setStepStates(initialStepStates);
     }
   };
 
@@ -181,75 +275,90 @@ export default function AWSOnboardingPage() {
 
   const mainSteps = guideData.steps.filter(s => !s.id.includes('.'));
   const subSteps = guideData.steps.filter(s => s.id.includes('.'));
+  const firstSubStepId = subSteps[0]?.id;
+  const showProgressBar = stepStates.some(step => step.inView || step.completed);
+
+  useEffect(() => {
+    if (firstSubStepId) {
+      setActiveStep(firstSubStepId);
+    }
+  }, [firstSubStepId]);
 
   // Table of Contents Component
-  const TableOfContents = () => (
-    <Box
-      sx={{
-        position: 'sticky',
-        top: 120,
-        maxHeight: 'calc(100vh - 140px)',
-        overflowY: 'auto',
-        pr: 2,
-      }}
-    >
-      <Typography variant="h6" fontWeight={700} mb={2}>
-        Contenido
-      </Typography>
-      <List dense>
-        {subSteps.map(step => {
-          const state = stepStates.find(s => s.id === step.id);
-          const isActive = activeStep === step.id;
-          return (
-            <ListItem
-              key={step.id}
-              onClick={() => scrollToStep(step.id)}
-              sx={{
-                borderRadius: 2,
-                mb: 0.5,
-                bgcolor: isActive ? 'primary.main' : 'transparent',
-                color: isActive ? 'white' : 'text.primary',
-                cursor: 'pointer',
-                '&:hover': {
-                  bgcolor: isActive ? 'primary.dark' : 'action.hover',
-                },
-                transition: 'all 0.2s ease',
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 36 }}>
-                {state?.completed ? (
-                  <CheckCircle sx={{ color: isActive ? 'white' : 'success.main', fontSize: 20 }} />
-                ) : (
-                  <RadioButtonUnchecked sx={{ color: isActive ? 'white' : 'text.secondary', fontSize: 20 }} />
-                )}
-              </ListItemIcon>
-              <ListItemText
-                primary={step.title.replace('Paso ', '')}
-                primaryTypographyProps={{
-                  fontSize: '0.875rem',
-                  fontWeight: isActive ? 600 : 400,
-                }}
-              />
-            </ListItem>
-          );
-        })}
-      </List>
-      <Button
-        variant="outlined"
-        size="small"
-        startIcon={<RestartAlt />}
-        onClick={resetProgress}
-        fullWidth
-        sx={{ mt: 2 }}
+  const TableOfContents = () => {
+    const formatStepTitle = (title: string) => {
+      const prefix = `${uiText.stepPrefix} `;
+      return title.startsWith(prefix) ? title.slice(prefix.length) : title;
+    };
+
+    return (
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 120,
+          maxHeight: 'calc(100vh - 140px)',
+          overflowY: 'auto',
+          pr: 2,
+        }}
       >
-        Reiniciar progreso
-      </Button>
-    </Box>
-  );
+        <Typography variant="h6" fontWeight={700} mb={2}>
+          {uiText.contentsTitle}
+        </Typography>
+        <List dense>
+          {subSteps.map(step => {
+            const state = stepStates.find(s => s.id === step.id);
+            const isActive = activeStep === step.id;
+            return (
+              <ListItem
+                key={step.id}
+                onClick={() => scrollToStep(step.id)}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  bgcolor: isActive ? 'primary.main' : 'transparent',
+                  color: isActive ? 'white' : 'text.primary',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    bgcolor: isActive ? 'primary.dark' : 'action.hover',
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 36 }}>
+                  {state?.completed ? (
+                    <CheckCircle sx={{ color: isActive ? 'white' : 'success.main', fontSize: 20 }} />
+                  ) : (
+                    <RadioButtonUnchecked sx={{ color: isActive ? 'white' : 'text.secondary', fontSize: 20 }} />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  primary={formatStepTitle(step.title)}
+                  primaryTypographyProps={{
+                    fontSize: '0.875rem',
+                    fontWeight: isActive ? 600 : 400,
+                  }}
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<RestartAlt />}
+          onClick={resetProgress}
+          fullWidth
+          sx={{ mt: 2 }}
+        >
+          {uiText.resetProgress}
+        </Button>
+      </Box>
+    );
+  };
 
   if (loading) {
     return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={awsTheme}>
         <Container maxWidth="xl" sx={{ py: 4 }}>
           <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 4, mb: 4 }} />
           <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 4 }} />
@@ -259,7 +368,7 @@ export default function AWSOnboardingPage() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={awsTheme}>
       <Box
         sx={{
           bgcolor: 'background.default',
@@ -294,53 +403,55 @@ export default function AWSOnboardingPage() {
         }}
       >
         {/* Sticky Progress Bar */}
-        <Box
-          sx={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 1100,
-            bgcolor: 'background.paper',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            boxShadow: 2,
-          }}
-        >
-          <Container maxWidth="xl">
-            <Box sx={{ display: 'flex', alignItems: 'center', py: 2, gap: 2 }}>
-              {isMobile && (
-                <IconButton onClick={() => setDrawerOpen(true)} size="small">
-                  <MenuIcon />
-                </IconButton>
-              )}
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="body2" fontWeight={600}>
-                    Progreso del Onboarding
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {completedCount} / {totalCount} completados
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={progress}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    bgcolor: 'action.hover',
-                    '& .MuiLinearProgress-bar': {
+        {showProgressBar && (
+          <Box
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 1100,
+              bgcolor: 'background.paper',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              boxShadow: 2,
+            }}
+          >
+            <Container maxWidth="xl">
+              <Box sx={{ display: 'flex', alignItems: 'center', py: 2, gap: 2 }}>
+                {isMobile && (
+                  <IconButton onClick={() => setDrawerOpen(true)} size="small">
+                    <MenuIcon />
+                  </IconButton>
+                )}
+                <Box sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="body2" fontWeight={600}>
+                      {uiText.progressTitle}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {completedCount} / {totalCount} {uiText.progressCompleted}
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                      height: 8,
                       borderRadius: 4,
-                      background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
-                    },
-                  }}
-                />
+                      bgcolor: 'action.hover',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 4,
+                        background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                      },
+                    }}
+                  />
+                </Box>
+                <Typography variant="h6" fontWeight={700} color="primary">
+                  {Math.round(progress)}%
+                </Typography>
               </Box>
-              <Typography variant="h6" fontWeight={700} color="primary">
-                {Math.round(progress)}%
-              </Typography>
-            </Box>
-          </Container>
-        </Box>
+            </Container>
+          </Box>
+        )}
 
         <Container maxWidth="xl" sx={{ py: 6 }}>
           {/* Hero Section */}
@@ -351,7 +462,10 @@ export default function AWSOnboardingPage() {
           >
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #003031 0%, #005657 100%)',
+                background: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? 'linear-gradient(135deg, #0f3436 0%, #0b5b5c 100%)'
+                    : 'linear-gradient(135deg, #003031 0%, #005657 100%)',
                 borderRadius: 4,
                 p: { xs: 4, md: 6 },
                 mb: 6,
@@ -374,7 +488,7 @@ export default function AWSOnboardingPage() {
                 sx={{ color: 'white', mb: 3 }}
                 href="/onboarding"
               >
-                Volver a Onboarding
+                {uiText.backToOnboarding}
               </Button>
 
               <Typography variant="h1" gutterBottom sx={{ position: 'relative' }}>
@@ -384,17 +498,17 @@ export default function AWSOnboardingPage() {
               <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
                 <Chip
                   icon={<Schedule />}
-                  label="5-7 días laborables"
+                  label={uiText.estimatedTime}
                   sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }}
                 />
                 <Chip
                   icon={<Person />}
-                  label="Dificultad: Media"
+                  label={uiText.difficulty}
                   sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }}
                 />
                 <Chip
                   icon={<CheckCircle />}
-                  label={`${completedCount}/${totalCount} pasos completados`}
+                  label={`${completedCount}/${totalCount} ${uiText.stepsCompleted}`}
                   sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }}
                 />
               </Box>
@@ -477,6 +591,7 @@ export default function AWSOnboardingPage() {
               {guideData.steps.map((step, index) => {
                 const isMainStep = !step.id.includes('.');
                 const state = stepStates.find(s => s.id === step.id);
+                const owner = ownerByStepId[step.id];
 
                 // Skip main steps in detailed rendering (they're just headers)
                 if (isMainStep) {
@@ -487,7 +602,10 @@ export default function AWSOnboardingPage() {
                         fontWeight={800}
                         gutterBottom
                         sx={{
-                          background: 'linear-gradient(135deg, #003031 0%, #005657 100%)',
+                          background: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? 'linear-gradient(135deg, #0f3436 0%, #0b5b5c 100%)'
+                              : 'linear-gradient(135deg, #003031 0%, #005657 100%)',
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
                           backgroundClip: 'text',
@@ -503,16 +621,10 @@ export default function AWSOnboardingPage() {
                 }
 
                 return (
-                  <motion.div
+                  <Box
                     key={step.id}
-                    ref={el => { if (el) stepRefs.current[step.id] = el; }}
-                    initial={{ opacity: 0, y: 60, scale: 0.95 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: false, margin: '-80px' }}
-                    transition={{
-                      duration: 0.6,
-                      ease: [0.22, 1, 0.36, 1],
-                      opacity: { duration: 0.4 },
+                    ref={(el: HTMLDivElement | null) => {
+                      stepRefs.current[step.id] = el;
                     }}
                   >
                     <Card
@@ -558,30 +670,12 @@ export default function AWSOnboardingPage() {
                             </Typography>
                             {step.meta?.badge_or_tag && (
                               <Chip
-                                icon={step.meta.badge_or_tag.includes('Tú') ? <PersonOutline /> : <Business />}
+                                icon={owner === 'client' ? <PersonOutline /> : owner === 'tdsynnex' ? <Business /> : undefined}
                                 label={step.meta.badge_or_tag}
                                 size="small"
-                                color={step.meta.badge_or_tag.includes('TD SYNNEX') ? 'secondary' : 'primary'}
+                                color={owner === 'tdsynnex' ? 'secondary' : 'primary'}
                                 variant="outlined"
                               />
-                            )}
-                            {state?.completed && (
-                              <motion.div
-                                initial={{ scale: 0, rotate: -180 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                              >
-                                <Chip
-                                  icon={<CheckCircle />}
-                                  label="Completado"
-                                  size="small"
-                                  color="success"
-                                  sx={{
-                                    fontWeight: 600,
-                                    boxShadow: '0 0 12px rgba(16, 185, 129, 0.3)',
-                                  }}
-                                />
-                              </motion.div>
                             )}
                           </Box>
                           <Typography variant="body1" color="text.secondary" paragraph>
@@ -591,9 +685,17 @@ export default function AWSOnboardingPage() {
 
                         {/* Prerequisites */}
                         {step.prerequisites && step.prerequisites.length > 0 && (
-                          <Box sx={{ mb: 3, p: 3, bgcolor: 'info.lighter', borderRadius: 2 }}>
+                          <Box
+                            sx={{
+                              mb: 3,
+                              p: 3,
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.info.main, theme.palette.mode === 'dark' ? 0.18 : 0.08),
+                              borderRadius: 2,
+                            }}
+                          >
                             <Typography variant="h6" fontWeight={600} gutterBottom>
-                              Requisitos previos
+                              {uiText.prerequisites}
                             </Typography>
                             <List dense>
                               {step.prerequisites.map((req, i) => (
@@ -662,7 +764,7 @@ export default function AWSOnboardingPage() {
                         {step.assets && step.assets.length > 0 && (
                           <Box sx={{ mb: 3 }}>
                             <Typography variant="h6" fontWeight={600} gutterBottom>
-                              Documentos necesarios
+                              {uiText.documents}
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                               {step.assets.map((asset: any, i) => (
@@ -685,7 +787,8 @@ export default function AWSOnboardingPage() {
                             sx={{
                               mb: 3,
                               p: 3,
-                              bgcolor: 'info.lighter',
+                              bgcolor: (theme) =>
+                                alpha(theme.palette.info.main, theme.palette.mode === 'dark' ? 0.18 : 0.08),
                               borderRadius: 2,
                               border: '2px dashed',
                               borderColor: 'info.main',
@@ -694,7 +797,7 @@ export default function AWSOnboardingPage() {
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                               <Email color="info" fontSize="large" />
                               <Typography variant="h6" fontWeight={600}>
-                                Correo electrónico esperado
+                                {uiText.expectedEmail}
                               </Typography>
                             </Box>
                             {anim.payload.map((line: string, idx: number) => (
@@ -717,7 +820,7 @@ export default function AWSOnboardingPage() {
                                   bgcolor: 'action.hover',
                                   borderRadius: 2,
                                   borderLeft: '4px solid',
-                                  borderColor: '#003031',
+                                  borderColor: (theme) => theme.palette.primary.main,
                                 }}
                               >
                                 <Typography variant="body2">{note.text}</Typography>
@@ -756,7 +859,7 @@ export default function AWSOnboardingPage() {
                         )}
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </Box>
                 );
               })}
 
@@ -778,10 +881,10 @@ export default function AWSOnboardingPage() {
                     >
                       <CheckCircle sx={{ fontSize: 80, mb: 2 }} />
                       <Typography variant="h3" fontWeight={800} gutterBottom>
-                        ¡Felicidades!
+                        {uiText.completionTitle}
                       </Typography>
                       <Typography variant="h6" paragraph>
-                        Has completado exitosamente el proceso de onboarding de Amazon Web Services con TD SYNNEX.
+                        {uiText.completionMessage}
                       </Typography>
                       <Button
                         variant="contained"
@@ -789,7 +892,7 @@ export default function AWSOnboardingPage() {
                         sx={{ bgcolor: 'white', color: 'success.main', mt: 2 }}
                         href="/onboarding"
                       >
-                        Volver a Onboarding
+                        {uiText.backToOnboarding}
                       </Button>
                     </Card>
                   </motion.div>
@@ -808,7 +911,7 @@ export default function AWSOnboardingPage() {
           <Box sx={{ width: 280, p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h6" fontWeight={700}>
-                Contenido
+                {uiText.contentsTitle}
               </Typography>
               <IconButton onClick={() => setDrawerOpen(false)}>
                 <Close />

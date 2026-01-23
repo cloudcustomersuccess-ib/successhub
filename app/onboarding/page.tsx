@@ -35,7 +35,7 @@ export default function OnboardingPage() {
 
       <Grid container spacing={3}>
         {/* AWS */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             elevation={3}
             sx={{
@@ -90,7 +90,7 @@ export default function OnboardingPage() {
         </Grid>
 
         {/* Google Cloud */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             elevation={3}
             sx={{
@@ -145,7 +145,7 @@ export default function OnboardingPage() {
         </Grid>
 
         {/* Microsoft CSP */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             elevation={3}
             sx={{

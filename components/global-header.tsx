@@ -26,6 +26,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useThemeMode } from '@/lib/theme-registry';
+import { useLanguage } from '@/lib/i18n/language-provider';
+import type { Language as LanguageCode } from '@/lib/i18n/types';
 
 // Configuración de navegación
 const navigationItems = [
@@ -37,20 +39,19 @@ const navigationItems = [
 ];
 
 // Idiomas disponibles
-const languages = [
+const languages: { code: LanguageCode; label: string }[] = [
   { code: 'es', label: 'Español' },
   { code: 'en', label: 'English' },
   { code: 'pt', label: 'Português' },
-  { code: 'fr', label: 'Français' },
 ];
 
 export default function GlobalHeader() {
   const pathname = usePathname();
   const theme = useTheme();
   const { mode, toggleTheme } = useThemeMode();
+  const { language, setLanguage } = useLanguage();
   const [searchValue, setSearchValue] = useState('');
   const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(null);
-  const [currentLanguage, setCurrentLanguage] = useState('es');
 
   const handleLanguageClick = (event: MouseEvent<HTMLElement>) => {
     setLanguageAnchor(event.currentTarget);
@@ -60,10 +61,9 @@ export default function GlobalHeader() {
     setLanguageAnchor(null);
   };
 
-  const handleLanguageSelect = (code: string) => {
-    setCurrentLanguage(code);
+  const handleLanguageSelect = (code: LanguageCode) => {
+    setLanguage(code);
     handleLanguageClose();
-    // Aquí iría la lógica de cambio de idioma (i18n)
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -207,7 +207,7 @@ export default function GlobalHeader() {
                 textTransform: 'uppercase',
               }}
             >
-              {currentLanguage}
+              {language}
             </Button>
             <Menu
               anchorEl={languageAnchor}
@@ -220,7 +220,7 @@ export default function GlobalHeader() {
                 <MenuItem
                   key={lang.code}
                   onClick={() => handleLanguageSelect(lang.code)}
-                  selected={lang.code === currentLanguage}
+                  selected={lang.code === language}
                   sx={{ minWidth: 150 }}
                 >
                   {lang.label}
