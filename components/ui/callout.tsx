@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Box, Typography, Paper, useTheme } from '@mui/material';
+import { Box, Typography, Paper, useTheme, SxProps, Theme } from '@mui/material';
 import {
   Info,
   CheckCircle,
@@ -17,6 +17,7 @@ interface CalloutProps {
   title?: string;
   children: ReactNode;
   icon?: ReactNode;
+  sx?: SxProps<Theme>;
 }
 
 const getCalloutConfig = (type: CalloutType, theme: any) => {
@@ -61,7 +62,7 @@ const getCalloutConfig = (type: CalloutType, theme: any) => {
   return configs[type];
 };
 
-export function Callout({ type = 'info', title, children, icon }: CalloutProps) {
+export function Callout({ type = 'info', title, children, icon, sx }: CalloutProps) {
   const theme = useTheme();
   const config = getCalloutConfig(type, theme);
 
@@ -77,6 +78,7 @@ export function Callout({ type = 'info', title, children, icon }: CalloutProps) 
         display: 'flex',
         gap: 2,
         mb: 2,
+        ...sx,
       }}
     >
       <Box
