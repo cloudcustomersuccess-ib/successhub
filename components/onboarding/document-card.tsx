@@ -1,7 +1,6 @@
 'use client';
 
-import { Card, CardContent, Box, Typography, IconButton } from '@mui/material';
-import { Description, Download, OpenInNew } from '@mui/icons-material';
+import { FileText, Download, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface DocumentCardProps {
@@ -27,59 +26,40 @@ export default function DocumentCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          p: 1.5,
-          '&:hover': {
-            boxShadow: 4,
-            transform: 'translateY(-2px)',
-            transition: 'all 0.3s ease',
-          },
-        }}
-      >
-        <Box
-          sx={{
-            bgcolor: 'primary.light',
-            borderRadius: 1,
-            p: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mr: 2,
-          }}
-        >
-          <Description sx={{ color: 'primary.main', fontSize: 28 }} />
-        </Box>
-        <CardContent sx={{ flex: 1, p: 0, '&:last-child': { pb: 0 } }}>
-          <Typography variant="body1" fontWeight={600} gutterBottom>
-            {title}
-          </Typography>
+      <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 transition-all hover:-translate-y-0.5 hover:shadow-md">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-subtle)]">
+          <FileText className="h-6 w-6 text-[#005657]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm text-[var(--foreground)]">{title}</p>
           {description && (
-            <Typography variant="body2" color="text.secondary">
-              {description}
-            </Typography>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{description}</p>
           )}
           {size && (
-            <Typography variant="caption" color="text.secondary">
-              {size}
-            </Typography>
+            <p className="text-xs text-[var(--muted-foreground)]">{size}</p>
           )}
-        </CardContent>
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
+        </div>
+        <div className="flex gap-1">
           {downloadUrl && (
-            <IconButton size="small" color="primary" href={downloadUrl}>
-              <Download />
-            </IconButton>
+            <a
+              href={downloadUrl}
+              className="rounded-md p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[#005657] transition-colors"
+            >
+              <Download className="h-4 w-4" />
+            </a>
           )}
           {viewUrl && (
-            <IconButton size="small" color="primary" href={viewUrl} target="_blank">
-              <OpenInNew />
-            </IconButton>
+            <a
+              href={viewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[#005657] transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
           )}
-        </Box>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

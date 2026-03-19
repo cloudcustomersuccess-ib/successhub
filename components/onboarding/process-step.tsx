@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Typography, Stepper, Step, StepLabel, StepContent } from '@mui/material';
 import { ReactNode } from 'react';
 import OwnerBadge, { OwnerType } from './owner-badge';
 
@@ -16,33 +15,21 @@ interface ProcessStepProps {
 
 export default function ProcessStep({ title, owner, ownerLabel, substeps }: ProcessStepProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold">
-          {title}
-        </Typography>
+    <div className="mb-8">
+      <div className="flex items-center gap-3 mb-4">
+        <h3 className="text-xl font-bold text-[var(--foreground)]">{title}</h3>
         <OwnerBadge owner={owner} label={ownerLabel} />
-      </Box>
+      </div>
 
-      <Stepper orientation="vertical" sx={{ pl: 2 }}>
+      <div className="pl-4 border-l-2 border-[var(--border)] space-y-6">
         {substeps.map((substep, index) => (
-          <Step key={index} active expanded>
-            <StepLabel
-              sx={{
-                '& .MuiStepLabel-label': {
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                },
-              }}
-            >
-              {substep.label}
-            </StepLabel>
-            <StepContent>
-              <Box sx={{ py: 2 }}>{substep.content}</Box>
-            </StepContent>
-          </Step>
+          <div key={index} className="relative">
+            <div className="absolute -left-[1.375rem] top-1 h-4 w-4 rounded-full border-2 border-[#005657] bg-[var(--background)]" />
+            <p className="text-base font-semibold text-[var(--foreground)] mb-2">{substep.label}</p>
+            <div className="text-sm text-[var(--muted-foreground)]">{substep.content}</div>
+          </div>
         ))}
-      </Stepper>
-    </Box>
+      </div>
+    </div>
   );
 }

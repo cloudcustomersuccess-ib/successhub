@@ -1,221 +1,91 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
-
 const leftWords = ['Best', 'Premium', 'Key', 'Top', 'Global', 'Cloud'];
 const rightWords = ['Support', 'Care', 'Satisfaction', 'Experience', 'Success'];
 
 export default function StickyScrollWords() {
   return (
-    <Box
-      sx={{
-        bgcolor: '#000000',
-        color: '#ffffff',
-        minHeight: '200vh',
-        position: 'relative',
-      }}
-    >
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr auto 1fr' },
-          gap: { xs: 2, md: 4 },
-          maxWidth: '1600px',
-          mx: 'auto',
-          px: { xs: 2, md: 4 },
-        }}
+    <div className="bg-black text-white" style={{ minHeight: '200vh' }}>
+      <div
+        className="grid gap-4 md:gap-8 max-w-[1600px] mx-auto px-4 md:px-8"
+        style={{ gridTemplateColumns: 'repeat(1, 1fr)', }}
       >
-        {/* Left Column - Scrolling Words */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: { xs: 2, md: 4 },
-            pt: { xs: 4, md: 8 },
-          }}
-        >
-          {leftWords.map((word, index) => (
-            <Box
-              key={index}
-              sx={{
-                minHeight: { xs: '30vh', md: '35vh' },
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: { xs: 'center', md: 'flex-end' },
-                pr: { xs: 0, md: 4 },
-              }}
-            >
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: {
-                    xs: '2.5rem',
-                    sm: '3.5rem',
-                    md: '4.5rem',
-                    lg: '5.5rem',
-                    xl: '6.5rem'
-                  },
-                  fontWeight: 800,
-                  textAlign: { xs: 'center', md: 'right' },
-                  opacity: index === leftWords.length - 1 ? 1 : 0.25,
-                  transition: 'opacity 0.5s ease',
-                  color: index === leftWords.length - 1 ? '#ffffff' : '#666666',
-                  lineHeight: 1,
-                }}
+        {/* Three-column layout on desktop */}
+        <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] gap-8">
+          {/* Left column */}
+          <div className="flex flex-col gap-4 md:gap-8 pt-8 md:pt-16">
+            {leftWords.map((word, i) => (
+              <div
+                key={i}
+                className="min-h-[35vh] flex items-center justify-end pr-8"
               >
-                {word}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+                <span
+                  className="text-[clamp(2.5rem,6vw,6.5rem)] font-extrabold leading-none transition-all duration-500"
+                  style={{
+                    color: i === leftWords.length - 1 ? '#ffffff' : '#444444',
+                  }}
+                >
+                  {word}
+                </span>
+              </div>
+            ))}
+          </div>
 
-        {/* Center Column - Sticky "Customer" */}
-        <Box
-          sx={{
-            position: 'sticky',
-            top: '45%',
-            height: 'fit-content',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            px: { xs: 2, md: 4 },
-          }}
-        >
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: {
-                xs: '2.5rem',
-                sm: '3.5rem',
-                md: '4.5rem',
-                lg: '5.5rem',
-                xl: '6.5rem'
-              },
-              fontWeight: 800,
-              textAlign: 'center',
-              whiteSpace: 'nowrap',
-              lineHeight: 1,
-            }}
-          >
-            Customer
-          </Typography>
-        </Box>
+          {/* Center sticky */}
+          <div className="sticky top-[45%] h-fit flex items-center justify-center px-8">
+            <span className="text-[clamp(2.5rem,6vw,6.5rem)] font-extrabold leading-none whitespace-nowrap">
+              Customer
+            </span>
+          </div>
 
-        {/* Right Column - Scrolling Words */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: { xs: 2, md: 4 },
-            pt: { xs: 4, md: 8 },
-          }}
-        >
-          {rightWords.map((word, index) => (
-            <Box
-              key={index}
-              sx={{
-                minHeight: { xs: '30vh', md: '35vh' },
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: { xs: 'center', md: 'flex-start' },
-                pl: { xs: 0, md: 4 },
-              }}
-            >
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: {
-                    xs: '2.5rem',
-                    sm: '3.5rem',
-                    md: '4.5rem',
-                    lg: '5.5rem',
-                    xl: '6.5rem'
-                  },
-                  fontWeight: 800,
-                  textAlign: { xs: 'center', md: 'left' },
-                  opacity: index === rightWords.length - 1 ? 1 : 0.25,
-                  transition: 'opacity 0.5s ease',
-                  color: index === rightWords.length - 1 ? '#ffffff' : '#666666',
-                  lineHeight: 1,
-                }}
+          {/* Right column */}
+          <div className="flex flex-col gap-4 md:gap-8 pt-8 md:pt-16">
+            {rightWords.map((word, i) => (
+              <div
+                key={i}
+                className="min-h-[35vh] flex items-center justify-start pl-8"
               >
-                {word}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
+                <span
+                  className="text-[clamp(2.5rem,6vw,6.5rem)] font-extrabold leading-none transition-all duration-500"
+                  style={{
+                    color: i === rightWords.length - 1 ? '#ffffff' : '#444444',
+                  }}
+                >
+                  {word}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      {/* Final Static Section - Cloud Customer Success */}
-      <Box
-        sx={{
-          minHeight: '40vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          px: 2,
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: { xs: 2, md: 4 },
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-          }}
-        >
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: {
-                xs: '2.5rem',
-                sm: '3.5rem',
-                md: '4.5rem',
-                lg: '5.5rem',
-                xl: '6.5rem'
-              },
-              fontWeight: 800,
-              lineHeight: 1,
-            }}
-          >
-            Cloud
-          </Typography>
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: {
-                xs: '2.5rem',
-                sm: '3.5rem',
-                md: '4.5rem',
-                lg: '5.5rem',
-                xl: '6.5rem'
-              },
-              fontWeight: 800,
-              lineHeight: 1,
-            }}
-          >
-            Customer
-          </Typography>
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: {
-                xs: '2.5rem',
-                sm: '3.5rem',
-                md: '4.5rem',
-                lg: '5.5rem',
-                xl: '6.5rem'
-              },
-              fontWeight: 800,
-              lineHeight: 1,
-            }}
-          >
-            Success
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+        {/* Mobile: single column */}
+        <div className="md:hidden flex flex-col gap-6 pt-8">
+          {leftWords.map((word, i) => (
+            <div key={i} className="min-h-[25vh] flex items-center justify-center">
+              <span
+                className="text-[clamp(2rem,10vw,4rem)] font-extrabold leading-none"
+                style={{ color: i === leftWords.length - 1 ? '#ffffff' : '#444444' }}
+              >
+                {word} Customer
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Final static section */}
+      <div className="min-h-[40vh] flex items-center justify-center px-4">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center justify-center text-center">
+          {['Cloud', 'Customer', 'Success'].map((word) => (
+            <span
+              key={word}
+              className="text-[clamp(2.5rem,6vw,6.5rem)] font-extrabold leading-none"
+            >
+              {word}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

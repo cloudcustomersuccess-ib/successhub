@@ -4,7 +4,6 @@ import ThemeRegistry from "@/lib/theme-registry";
 import GlobalHeader from "@/components/global-header";
 import LenisWrapper from "@/components/lenis-wrapper";
 import { LanguageProvider } from "@/lib/i18n/language-provider";
-import { Box } from "@mui/material";
 
 export const metadata: Metadata = {
   title: "Cloud Customer Success Hub | TD SYNNEX",
@@ -22,12 +21,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeRegistry>
           <LanguageProvider>
             <LenisWrapper>
-              <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <div className="flex flex-col min-h-screen">
                 <GlobalHeader />
-                <Box component="main" sx={{ flex: 1 }}>
+                <main className="flex-1">
                   {children}
-                </Box>
-              </Box>
+                </main>
+              </div>
             </LenisWrapper>
           </LanguageProvider>
         </ThemeRegistry>

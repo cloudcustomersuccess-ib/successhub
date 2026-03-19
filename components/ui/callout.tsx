@@ -1,14 +1,6 @@
-'use client';
-
 import { ReactNode } from 'react';
-import { Box, Typography, Paper, useTheme, SxProps, Theme } from '@mui/material';
-import {
-  Info,
-  CheckCircle,
-  Warning,
-  Error as ErrorIcon,
-  Lightbulb,
-} from '@mui/icons-material';
+import { Info, CheckCircle2, AlertTriangle, AlertCircle, Lightbulb } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export type CalloutType = 'info' | 'success' | 'warning' | 'error' | 'tip';
 
@@ -17,105 +9,51 @@ interface CalloutProps {
   title?: string;
   children: ReactNode;
   icon?: ReactNode;
-  sx?: SxProps<Theme>;
+  className?: string;
 }
 
-const getCalloutConfig = (type: CalloutType, theme: any) => {
-  const configs = {
-    info: {
-      icon: <Info />,
-      bgcolor: theme.palette.mode === 'light' ? '#e3f2fd' : '#0d47a1',
-      borderColor: theme.palette.mode === 'light' ? '#1976d2' : '#42a5f5',
-      iconColor: theme.palette.mode === 'light' ? '#1976d2' : '#90caf9',
-      textColor: theme.palette.mode === 'light' ? '#0d47a1' : '#e3f2fd',
-    },
-    success: {
-      icon: <CheckCircle />,
-      bgcolor: theme.palette.mode === 'light' ? '#e8f5e9' : '#1b5e20',
-      borderColor: theme.palette.mode === 'light' ? '#2e7d32' : '#66bb6a',
-      iconColor: theme.palette.mode === 'light' ? '#2e7d32' : '#81c784',
-      textColor: theme.palette.mode === 'light' ? '#1b5e20' : '#e8f5e9',
-    },
-    warning: {
-      icon: <Warning />,
-      bgcolor: theme.palette.mode === 'light' ? '#fff3e0' : '#e65100',
-      borderColor: theme.palette.mode === 'light' ? '#ed6c02' : '#ffb74d',
-      iconColor: theme.palette.mode === 'light' ? '#ed6c02' : '#ffcc80',
-      textColor: theme.palette.mode === 'light' ? '#e65100' : '#fff3e0',
-    },
-    error: {
-      icon: <ErrorIcon />,
-      bgcolor: theme.palette.mode === 'light' ? '#ffebee' : '#b71c1c',
-      borderColor: theme.palette.mode === 'light' ? '#d32f2f' : '#ef5350',
-      iconColor: theme.palette.mode === 'light' ? '#d32f2f' : '#e57373',
-      textColor: theme.palette.mode === 'light' ? '#b71c1c' : '#ffebee',
-    },
-    tip: {
-      icon: <Lightbulb />,
-      bgcolor: theme.palette.mode === 'light' ? '#fff9c4' : '#f57f17',
-      borderColor: theme.palette.mode === 'light' ? '#f9a825' : '#ffeb3b',
-      iconColor: theme.palette.mode === 'light' ? '#f57f17' : '#fff59d',
-      textColor: theme.palette.mode === 'light' ? '#f57f17' : '#fff9c4',
-    },
-  };
-
-  return configs[type];
+const configs: Record<CalloutType, { icon: ReactNode; cls: string; labelCls: string }> = {
+  info: {
+    icon: <Info className="h-4 w-4 mt-0.5 shrink-0" />,
+    cls: 'bg-blue-50 border-blue-300 text-blue-900 dark:bg-blue-950/40 dark:border-blue-700 dark:text-blue-200',
+    labelCls: 'text-blue-700 dark:text-blue-400',
+  },
+  success: {
+    icon: <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />,
+    cls: 'bg-emerald-50 border-emerald-300 text-emerald-900 dark:bg-emerald-950/40 dark:border-emerald-700 dark:text-emerald-200',
+    labelCls: 'text-emerald-700 dark:text-emerald-400',
+  },
+  warning: {
+    icon: <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />,
+    cls: 'bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/40 dark:border-amber-700 dark:text-amber-200',
+    labelCls: 'text-amber-700 dark:text-amber-400',
+  },
+  error: {
+    icon: <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />,
+    cls: 'bg-red-50 border-red-300 text-red-900 dark:bg-red-950/40 dark:border-red-700 dark:text-red-200',
+    labelCls: 'text-red-700 dark:text-red-400',
+  },
+  tip: {
+    icon: <Lightbulb className="h-4 w-4 mt-0.5 shrink-0" />,
+    cls: 'bg-yellow-50 border-yellow-300 text-yellow-900 dark:bg-yellow-950/40 dark:border-yellow-700 dark:text-yellow-200',
+    labelCls: 'text-yellow-700 dark:text-yellow-400',
+  },
 };
 
-export function Callout({ type = 'info', title, children, icon, sx }: CalloutProps) {
-  const theme = useTheme();
-  const config = getCalloutConfig(type, theme);
+export function Callout({ type = 'info', title, children, icon, className }: CalloutProps) {
+  const cfg = configs[type];
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 2.5,
-        bgcolor: config.bgcolor,
-        borderLeft: '4px solid',
-        borderColor: config.borderColor,
-        borderRadius: 2,
-        display: 'flex',
-        gap: 2,
-        mb: 2,
-        ...sx,
-      }}
-    >
-      <Box
-        sx={{
-          color: config.iconColor,
-          display: 'flex',
-          alignItems: 'flex-start',
-          pt: 0.5,
-        }}
-      >
-        {icon || config.icon}
-      </Box>
-      <Box sx={{ flex: 1 }}>
-        {title && (
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              mb: 0.5,
-              color: config.textColor,
-              fontSize: '1rem',
-            }}
-          >
-            {title}
-          </Typography>
-        )}
-        <Typography
-          variant="body2"
-          sx={{
-            color: config.textColor,
-            '& p': { mb: 1 },
-            '& p:last-child': { mb: 0 },
-          }}
-        >
-          {children}
-        </Typography>
-      </Box>
-    </Paper>
+    <div className={cn('rounded-md border px-4 py-3 text-sm mb-4', cfg.cls, className)}>
+      <div className="flex gap-3">
+        <span className={cfg.labelCls}>{icon ?? cfg.icon}</span>
+        <div className="flex-1 min-w-0">
+          {title && (
+            <p className={cn('font-semibold mb-1', cfg.labelCls)}>{title}</p>
+          )}
+          <div className="leading-relaxed">{children}</div>
+        </div>
+      </div>
+    </div>
   );
 }

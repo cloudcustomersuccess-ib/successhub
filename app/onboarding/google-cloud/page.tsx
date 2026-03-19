@@ -1,65 +1,42 @@
-'use client';
-
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  Card,
-  CardContent,
-} from '@mui/material';
-import { ArrowBack, Cloud, Construction } from '@mui/icons-material';
+import { ArrowLeft, Construction } from 'lucide-react';
 import Link from 'next/link';
-import { Callout } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import { Callout } from '@/components/ui/callout';
 
 export default function GoogleCloudOnboardingPage() {
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Button
-          component={Link}
-          href="/onboarding"
-          startIcon={<ArrowBack />}
-          variant="outlined"
-          size="small"
-          sx={{ mb: 2 }}
-        >
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <div className="mb-8">
+        <Button href="/onboarding" variant="outline" size="sm" className="mb-4">
+          <ArrowLeft className="h-3.5 w-3.5" />
           Volver a Onboarding
         </Button>
-        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">
           Alta en Google Cloud Platform (GCP)
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        </h1>
+        <p className="mt-2 text-[var(--muted-foreground)]">
           Guía completa para el proceso de alta en Google Cloud a través de TD SYNNEX
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      {/* Under Construction */}
-      <Card sx={{ p: 4, textAlign: 'center' }}>
-        <Construction sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-12 text-center mb-6">
+        <Construction className="mx-auto h-20 w-20 text-[#005657] mb-4" />
+        <h2 className="text-xl font-bold text-[var(--foreground)] mb-2">
           Página en construcción
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
+        </h2>
+        <p className="text-[var(--muted-foreground)] mb-6 max-w-md mx-auto">
           Estamos trabajando en la guía de onboarding para Google Cloud Platform.
           Próximamente encontrarás aquí toda la información necesaria para comenzar.
-        </Typography>
-        <Button
-          component={Link}
-          href="/onboarding"
-          variant="contained"
-          sx={{ mt: 2 }}
-        >
+        </p>
+        <Button href="/onboarding" variant="default">
           Volver a Onboarding
         </Button>
-      </Card>
+      </div>
 
-      {/* Coming Soon Info */}
-      <Callout type="info" title="Próximamente" sx={{ mt: 4 }}>
+      <Callout type="info" title="Próximamente">
         La guía de alta en Google Cloud estará disponible pronto. Mientras tanto,
         si necesitas asistencia inmediata, contacta con tu Partner Development Manager.
       </Callout>
-    </Container>
+    </div>
   );
 }

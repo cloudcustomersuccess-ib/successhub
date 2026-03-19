@@ -1,251 +1,130 @@
-'use client';
-
-import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Avatar,
-  Chip,
-  LinearProgress,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Divider,
-  Button,
-  Grid,
-} from '@mui/material';
 import {
   TrendingUp,
-  Assessment,
-  People,
+  BarChart3,
+  Users,
   ShoppingCart,
-  CheckCircle,
-  Schedule,
-  Warning,
-  ArrowBack
-} from '@mui/icons-material';
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  ArrowLeft,
+} from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 
-// Datos de ejemplo para el dashboard
 const statsCards = [
-  {
-    title: 'Ventas Totales',
-    value: '€124,592',
-    change: '+12.5%',
-    icon: <TrendingUp />,
-    color: '#1976d2',
-  },
-  {
-    title: 'Clientes Activos',
-    value: '1,423',
-    change: '+8.2%',
-    icon: <People />,
-    color: '#2e7d32',
-  },
-  {
-    title: 'Pedidos Pendientes',
-    value: '64',
-    change: '-3.1%',
-    icon: <ShoppingCart />,
-    color: '#ed6c02',
-  },
-  {
-    title: 'Tasa de Éxito',
-    value: '94.2%',
-    change: '+2.4%',
-    icon: <Assessment />,
-    color: '#9c27b0',
-  },
+  { title: 'Ventas Totales', value: '€124,592', change: '+12.5%', up: true, icon: TrendingUp, color: 'text-blue-600' },
+  { title: 'Clientes Activos', value: '1,423', change: '+8.2%', up: true, icon: Users, color: 'text-emerald-600' },
+  { title: 'Pedidos Pendientes', value: '64', change: '-3.1%', up: false, icon: ShoppingCart, color: 'text-orange-500' },
+  { title: 'Tasa de Éxito', value: '94.2%', change: '+2.4%', up: true, icon: BarChart3, color: 'text-purple-600' },
 ];
 
 const recentActivities = [
-  {
-    title: 'Nuevo pedido #4523',
-    subtitle: 'Cliente: Empresa ABC S.L.',
-    time: 'Hace 5 minutos',
-    status: 'success',
-    icon: <CheckCircle />,
-  },
-  {
-    title: 'Pedido #4521 en proceso',
-    subtitle: 'Cliente: Tech Solutions',
-    time: 'Hace 15 minutos',
-    status: 'warning',
-    icon: <Schedule />,
-  },
-  {
-    title: 'Alerta de inventario bajo',
-    subtitle: 'Producto: Widget Pro 2000',
-    time: 'Hace 1 hora',
-    status: 'error',
-    icon: <Warning />,
-  },
+  { title: 'Nuevo pedido #4523', subtitle: 'Cliente: Empresa ABC S.L.', time: 'Hace 5 minutos', status: 'success', Icon: CheckCircle2 },
+  { title: 'Pedido #4521 en proceso', subtitle: 'Cliente: Tech Solutions', time: 'Hace 15 minutos', status: 'warning', Icon: Clock },
+  { title: 'Alerta de inventario bajo', subtitle: 'Producto: Widget Pro 2000', time: 'Hace 1 hora', status: 'error', Icon: AlertTriangle },
 ];
 
 const projectProgress = [
-  { name: 'Implementación Q1', progress: 85, color: 'primary' },
-  { name: 'Migración de Datos', progress: 60, color: 'secondary' },
-  { name: 'Capacitación de Personal', progress: 40, color: 'success' },
-  { name: 'Optimización SEO', progress: 95, color: 'warning' },
+  { name: 'Implementación Q1', progress: 85 },
+  { name: 'Migración de Datos', progress: 60 },
+  { name: 'Capacitación de Personal', progress: 40 },
+  { name: 'Optimización SEO', progress: 95 },
 ];
+
+const statusColors: Record<string, string> = {
+  success: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+  warning: 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
+  error: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300',
+};
 
 export default function CustomerDashboard() {
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Button
-          component={Link}
-          href="/"
-          startIcon={<ArrowBack />}
-          variant="outlined"
-          size="small"
-          sx={{ mb: 2 }}
-        >
+    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-8">
+      <div className="mb-6">
+        <Button href="/" variant="outline" size="sm" className="mb-4">
+          <ArrowLeft className="h-3.5 w-3.5" />
           Volver al Índice
         </Button>
-        <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
-          Dashboard de Cliente
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Resumen de métricas y actividades del cliente
-        </Typography>
-      </Box>
+        <h1 className="text-3xl font-bold text-[var(--foreground)]">Dashboard de Cliente</h1>
+        <p className="text-[var(--muted-foreground)] mt-1">Resumen de métricas y actividades del cliente</p>
+      </div>
 
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {statsCards.map((stat, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-            <Card elevation={2}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {stat.title}
-                    </Typography>
-                    <Typography variant="h4" fontWeight="bold" gutterBottom>
-                      {stat.value}
-                    </Typography>
-                    <Chip
-                      label={stat.change}
-                      size="small"
-                      color={stat.change.startsWith('+') ? 'success' : 'error'}
-                      sx={{ fontWeight: 'bold' }}
-                    />
-                  </Box>
-                  <Avatar sx={{ bgcolor: stat.color, width: 56, height: 56 }}>
-                    {stat.icon}
-                  </Avatar>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {statsCards.map((stat) => (
+          <div key={stat.title} className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-5">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs text-[var(--muted-foreground)] mb-1">{stat.title}</p>
+                <p className="text-2xl font-bold text-[var(--foreground)]">{stat.value}</p>
+                <span className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${stat.up ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300'}`}>
+                  {stat.change}
+                </span>
+              </div>
+              <div className={`rounded-full bg-[var(--muted)] p-3 ${stat.color}`}>
+                <stat.icon className="h-6 w-6" />
+              </div>
+            </div>
+          </div>
         ))}
-      </Grid>
+      </div>
 
-      <Grid container spacing={3}>
-        {/* Recent Activities */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={2}>
-            <CardHeader
-              title="Actividad Reciente"
-              titleTypographyProps={{ fontWeight: 'bold' }}
-            />
-            <Divider />
-            <List>
-              {recentActivities.map((activity, index) => (
-                <Box key={index}>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar
-                        sx={{
-                          bgcolor:
-                            activity.status === 'success'
-                              ? 'success.main'
-                              : activity.status === 'warning'
-                              ? 'warning.main'
-                              : 'error.main',
-                        }}
-                      >
-                        {activity.icon}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={activity.title}
-                      secondary={
-                        <>
-                          {activity.subtitle}
-                          <br />
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            {activity.time}
-                          </Typography>
-                        </>
-                      }
-                    />
-                  </ListItem>
-                  {index < recentActivities.length - 1 && <Divider variant="inset" component="li" />}
-                </Box>
-              ))}
-            </List>
-          </Card>
-        </Grid>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {/* Recent Activity */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)]">
+          <div className="px-5 py-4">
+            <h2 className="font-bold text-[var(--foreground)]">Actividad Reciente</h2>
+          </div>
+          <Separator />
+          <ul>
+            {recentActivities.map((activity, i) => (
+              <li key={i}>
+                <div className="flex items-start gap-3 px-5 py-4">
+                  <div className={`rounded-full p-2 shrink-0 ${statusColors[activity.status]}`}>
+                    <activity.Icon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[var(--foreground)]">{activity.title}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{activity.subtitle}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{activity.time}</p>
+                  </div>
+                </div>
+                {i < recentActivities.length - 1 && <Separator />}
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* Project Progress */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={2}>
-            <CardHeader
-              title="Progreso de Proyectos"
-              titleTypographyProps={{ fontWeight: 'bold' }}
-            />
-            <Divider />
-            <CardContent>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {projectProgress.map((project, index) => (
-                  <Box key={index}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" fontWeight="medium">
-                        {project.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight="bold">
-                        {project.progress}%
-                      </Typography>
-                    </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={project.progress}
-                      color={project.color as any}
-                      sx={{ height: 8, borderRadius: 1 }}
-                    />
-                  </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)]">
+          <div className="px-5 py-4">
+            <h2 className="font-bold text-[var(--foreground)]">Progreso de Proyectos</h2>
+          </div>
+          <Separator />
+          <div className="px-5 py-4 space-y-5">
+            {projectProgress.map((p) => (
+              <div key={p.name}>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-sm font-medium text-[var(--foreground)]">{p.name}</span>
+                  <span className="text-sm font-bold text-[var(--muted-foreground)]">{p.progress}%</span>
+                </div>
+                <Progress value={p.progress} max={100} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        {/* Info Card */}
-        <Grid size={{ xs: 12 }}>
-          <Paper elevation={2} sx={{ p: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Página de Ejemplo con Material UI
-            </Typography>
-            <Typography variant="body2">
-              Esta es una página independiente creada con componentes de Material UI.
-              Puedes duplicar esta estructura para crear más páginas específicas para cada cliente o propósito.
-              Cada página tiene su propia URL y puede ser compartida de forma individual.
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+      {/* Info banner */}
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)] p-5">
+        <h3 className="font-bold text-[var(--foreground)] mb-1">Página de Ejemplo</h3>
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Esta es una página independiente creada con componentes shadcn/Tailwind.
+          Puedes duplicar esta estructura para crear más páginas específicas para cada cliente o propósito.
+        </p>
+      </div>
+    </div>
   );
 }

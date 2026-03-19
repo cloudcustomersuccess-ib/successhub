@@ -1,35 +1,14 @@
 'use client';
 
-import { useState, MouseEvent } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  Button,
-  IconButton,
-  InputBase,
-  Menu,
-  MenuItem,
-  Typography,
-  Divider,
-  alpha,
-  useTheme,
-  Container,
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Language,
-  Brightness4,
-  Brightness7,
-  KeyboardArrowDown,
-} from '@mui/icons-material';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Search, Globe, Sun, Moon, ChevronDown } from 'lucide-react';
 import { useThemeMode } from '@/lib/theme-registry';
 import { useLanguage } from '@/lib/i18n/language-provider';
 import type { Language as LanguageCode } from '@/lib/i18n/types';
+import { cn } from '@/lib/utils';
 
-// Configuración de navegación
 const navigationItems = [
   { label: 'Onboarding', href: '/onboarding' },
   { label: 'StreamOne ION', href: '/streamone-ion' },
@@ -38,7 +17,6 @@ const navigationItems = [
   { label: 'Growth Lab', href: '/growth-lab' },
 ];
 
-// Idiomas disponibles
 const languages: { code: LanguageCode; label: string }[] = [
   { code: 'es', label: 'Español' },
   { code: 'en', label: 'English' },
@@ -47,194 +25,124 @@ const languages: { code: LanguageCode; label: string }[] = [
 
 export default function GlobalHeader() {
   const pathname = usePathname();
-  const theme = useTheme();
   const { mode, toggleTheme } = useThemeMode();
   const { language, setLanguage } = useLanguage();
   const [searchValue, setSearchValue] = useState('');
-  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(null);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
 
-  const handleLanguageClick = (event: MouseEvent<HTMLElement>) => {
-    setLanguageAnchor(event.currentTarget);
-  };
-
-  const handleLanguageClose = () => {
-    setLanguageAnchor(null);
-  };
-
-  const handleLanguageSelect = (code: LanguageCode) => {
-    setLanguage(code);
-    handleLanguageClose();
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchValue.trim()) {
-      // Aquí iría la lógica de búsqueda
-      console.log('Searching for:', searchValue);
-    }
-  };
-
-  const isActivePath = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
-  };
-
-  // Logo según el modo
   const logoUrl =
     mode === 'light'
       ? 'https://i.imgur.com/RTXa1q1.png'
       : 'https://i.imgur.com/uWm1GT5.png';
 
-  return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        bgcolor: 'background.paper',
-        borderBottom: 1,
-        borderColor: 'divider',
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ gap: 3 }}>
-          {/* Logo y Brand */}
-          <Box
-            component={Link}
-            href="/"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              textDecoration: 'none',
-              flexShrink: 0,
-            }}
-          >
-            <Box
-              component="img"
-              src={logoUrl}
-              alt="TD SYNNEX"
-              sx={{
-                height: 32,
-                objectFit: 'contain',
-              }}
-            />
-            <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-            <Typography
-              variant="body1"
-              sx={{
-                fontWeight: 600,
-                color: 'text.primary',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              CX
-            </Typography>
-          </Box>
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
 
-          {/* Navegación Principal */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1, flex: 1 }}>
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
+      <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
+        <div className="flex h-14 items-center gap-4">
+
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoUrl} alt="TD SYNNEX" className="h-7 object-contain" />
+            <div className="h-5 w-px bg-[var(--border)]" />
+            <span className="text-sm font-semibold text-[var(--foreground)]">CX</span>
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
             {navigationItems.map((item) => (
-              <Button
+              <Link
                 key={item.href}
-                component={Link}
                 href={item.href}
-                sx={{
-                  color: isActivePath(item.href) ? 'primary.main' : 'text.primary',
-                  fontWeight: isActivePath(item.href) ? 700 : 500,
-                  position: 'relative',
-                  '&::after': isActivePath(item.href)
-                    ? {
-                        content: '""',
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '60%',
-                        height: 3,
-                        bgcolor: 'primary.main',
-                        borderRadius: '3px 3px 0 0',
-                      }
-                    : {},
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.primary.main, 0.08),
-                  },
-                }}
+                className={cn(
+                  'relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
+                  isActive(item.href)
+                    ? 'text-[#005657]'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)]'
+                )}
               >
                 {item.label}
-              </Button>
+                {isActive(item.href) && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-[60%] bg-[#005657] rounded-t" />
+                )}
+              </Link>
             ))}
-          </Box>
+          </nav>
 
-          {/* Búsqueda Global */}
-          <Box
-            component="form"
+          {/* Search */}
+          <form
             onSubmit={handleSearch}
-            sx={{
-              display: { xs: 'none', md: 'flex' },
-              alignItems: 'center',
-              bgcolor: alpha(theme.palette.common.black, 0.05),
-              borderRadius: 2,
-              px: 2,
-              py: 0.5,
-              minWidth: 220,
-              '&:hover': {
-                bgcolor: alpha(theme.palette.common.black, 0.08),
-              },
-              '&:focus-within': {
-                bgcolor: alpha(theme.palette.common.black, 0.08),
-                boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.3)}`,
-              },
-            }}
+            className="hidden md:flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--muted)] px-3 py-1.5 min-w-[180px] focus-within:border-[#005657] transition-colors"
           >
-            <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
-            <InputBase
+            <Search className="h-3.5 w-3.5 text-[var(--muted-foreground)] shrink-0" />
+            <input
+              type="text"
               placeholder="Buscar..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              sx={{ flex: 1, fontSize: '0.875rem' }}
+              className="flex-1 bg-transparent text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] outline-none"
             />
-          </Box>
+          </form>
 
-          {/* Selector de Idioma */}
-          <Box>
-            <Button
-              onClick={handleLanguageClick}
-              startIcon={<Language />}
-              endIcon={<KeyboardArrowDown />}
-              sx={{
-                color: 'text.primary',
-                minWidth: 'auto',
-                textTransform: 'uppercase',
-              }}
+          {/* Language Dropdown */}
+          <div ref={langRef} className="relative">
+            <button
+              onClick={() => setLangOpen((o) => !o)}
+              className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium uppercase text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
             >
+              <Globe className="h-3.5 w-3.5" />
               {language}
-            </Button>
-            <Menu
-              anchorEl={languageAnchor}
-              open={Boolean(languageAnchor)}
-              onClose={handleLanguageClose}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              {languages.map((lang) => (
-                <MenuItem
-                  key={lang.code}
-                  onClick={() => handleLanguageSelect(lang.code)}
-                  selected={lang.code === language}
-                  sx={{ minWidth: 150 }}
-                >
-                  {lang.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+              <ChevronDown className="h-3 w-3" />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-[var(--border)] bg-[var(--background)] shadow-lg py-1 z-50">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => { setLanguage(lang.code); setLangOpen(false); }}
+                    className={cn(
+                      'w-full px-3 py-1.5 text-left text-sm transition-colors',
+                      lang.code === language
+                        ? 'text-[#005657] font-semibold bg-[var(--accent-subtle)]'
+                        : 'text-[var(--foreground)] hover:bg-[var(--muted)]'
+                    )}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Toggle Modo Oscuro */}
-          <IconButton onClick={toggleTheme} color="inherit" sx={{ color: 'text.primary' }}>
-            {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-          </IconButton>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          {/* Dark mode toggle */}
+          <button
+            onClick={toggleTheme}
+            className="rounded-md p-1.5 text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+            aria-label="Toggle theme"
+          >
+            {mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+    </header>
   );
 }

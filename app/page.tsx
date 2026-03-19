@@ -2,77 +2,61 @@
 
 import { useEffect, useRef } from 'react';
 import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  Button,
-  alpha,
-  useTheme,
-  Chip,
-  Paper,
-  Grid,
-} from '@mui/material';
-import {
-  RocketLaunch,
-  CloudQueue,
-  Factory,
-  Support,
-  TrendingUp,
-  ArrowForward,
-  Speed,
-  Security,
+  Rocket,
   Cloud,
-  Insights,
-  AutoAwesome,
-  CheckCircle,
-} from '@mui/icons-material';
+  Factory,
+  HeadphonesIcon,
+  TrendingUp,
+  ArrowRight,
+  Gauge,
+  Shield,
+  BarChart3,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import StickyScrollWords from '@/components/sticky-scroll-words';
+import { Button } from '@/components/ui/button';
 
-// Declaración de tipos para Vanta.js
 declare global {
   interface Window {
-    VANTA?: {
-      FOG: (options: any) => any;
-    };
+    VANTA?: { FOG: (options: any) => any };
     THREE?: any;
   }
 }
 
 const sections = [
   {
-    icon: <RocketLaunch fontSize="large" />,
+    icon: Rocket,
     title: 'Onboarding',
     description: 'Guías paso a paso para comenzar tu viaje en la nube con TD SYNNEX',
     href: '/onboarding',
     color: '#0066cc',
   },
   {
-    icon: <CloudQueue fontSize="large" />,
+    icon: Cloud,
     title: 'StreamOne ION',
     description: 'Portal de gestión cloud completo para tus operaciones',
     href: '/streamone-ion',
     color: '#003031',
   },
   {
-    icon: <Factory fontSize="large" />,
+    icon: Factory,
     title: 'Fabricantes',
     description: 'Información y recursos de los principales fabricantes cloud',
     href: '/fabricantes',
     color: '#2e7d32',
   },
   {
-    icon: <Support fontSize="large" />,
+    icon: HeadphonesIcon,
     title: 'Soporte',
     description: 'Centro de ayuda y contacto con nuestro equipo de soporte',
     href: '/soporte',
     color: '#ed6c02',
   },
   {
-    icon: <TrendingUp fontSize="large" />,
+    icon: TrendingUp,
     title: 'Growth Lab',
     description: 'Estrategias y herramientas para hacer crecer tu negocio cloud',
     href: '/growth-lab',
@@ -80,73 +64,56 @@ const sections = [
   },
 ];
 
-// Stats data
 const stats = [
-  { label: 'Clientes Activos', value: '500+', icon: <Cloud /> },
-  { label: 'Fabricantes Integrados', value: '25+', icon: <Factory /> },
-  { label: 'Recursos Disponibles', value: '1000+', icon: <Insights /> },
-  { label: 'Uptime Garantizado', value: '99.9%', icon: <Speed /> },
+  { label: 'Clientes Activos', value: '500+', Icon: Cloud },
+  { label: 'Fabricantes Integrados', value: '25+', Icon: Factory },
+  { label: 'Recursos Disponibles', value: '1000+', Icon: BarChart3 },
+  { label: 'Uptime Garantizado', value: '99.9%', Icon: Gauge },
 ];
 
-// Features data
 const features = [
   {
-    icon: <RocketLaunch />,
+    Icon: Rocket,
     title: 'Onboarding Rápido',
     description: 'Comienza en minutos con nuestras guías paso a paso y herramientas automatizadas',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   },
   {
-    icon: <Security />,
+    Icon: Shield,
     title: 'Seguridad de Nivel Empresarial',
     description: 'Protección avanzada con cumplimiento de estándares internacionales',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
   {
-    icon: <Insights />,
+    Icon: BarChart3,
     title: 'Analytics en Tiempo Real',
     description: 'Visualiza el rendimiento y métricas clave de tu infraestructura cloud',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
   },
   {
-    icon: <AutoAwesome />,
+    Icon: Sparkles,
     title: 'Automatización Inteligente',
     description: 'Optimiza procesos con IA y machine learning integrado',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
   },
 ];
 
-// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0, 0, 0.2, 1] as [number, number, number, number] },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0, 0, 0.2, 1] as any } },
 };
 
-const staggerContainer = {
+const stagger = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const scaleIn = {
   hidden: { scale: 0.8, opacity: 0 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    transition: { duration: 0.5, ease: [0, 0, 0.2, 1] as [number, number, number, number] }
-  },
+  visible: { scale: 1, opacity: 1, transition: { duration: 0.5, ease: [0, 0, 0.2, 1] as any } },
 };
 
 export default function Home() {
-  const theme = useTheme();
   const vantaRef = useRef<HTMLDivElement>(null);
   const vantaEffect = useRef<any>(null);
 
@@ -180,586 +147,245 @@ export default function Home() {
           });
         }
       };
-
       if (window.VANTA && window.THREE) {
         initVanta();
       } else {
-        const checkVanta = setInterval(() => {
-          if (window.VANTA && window.THREE) {
-            clearInterval(checkVanta);
-            initVanta();
-          }
+        const check = setInterval(() => {
+          if (window.VANTA && window.THREE) { clearInterval(check); initVanta(); }
         }, 100);
-
-        return () => clearInterval(checkVanta);
+        return () => clearInterval(check);
       }
     }
-
-    return () => {
-      if (vantaEffect.current) {
-        vantaEffect.current.destroy();
-      }
-    };
+    return () => { if (vantaEffect.current) vantaEffect.current.destroy(); };
   }, []);
 
   return (
-    <Box sx={{ overflow: 'hidden' }}>
-      {/* Hero Section with Vanta.js */}
-      <Box
+    <div className="overflow-hidden">
+
+      {/* ── Hero ── */}
+      <div
         ref={vantaRef}
-        sx={{
-          height: '70vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+        className="relative flex items-center justify-center"
+        style={{ height: '70vh' }}
       >
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <Chip
-              label="Bienvenido a TD SYNNEX"
-              sx={{
-                mb: 3,
-                bgcolor: alpha('#ffffff', 0.2),
-                backdropFilter: 'blur(10px)',
-                color: 'white',
-                fontWeight: 600,
-                px: 2,
-                py: 2.5,
-                fontSize: '0.875rem',
-              }}
-            />
-            <Typography
-              variant="h1"
-              component="h1"
-              fontWeight="800"
-              gutterBottom
-              sx={{
-                mb: 2,
-                color: 'white',
-                fontSize: { xs: '2.5rem', md: '3.5rem' },
-                lineHeight: 1.2,
-                textShadow: '0 2px 20px rgba(0,0,0,0.3)',
-              }}
-            >
+            <span className="inline-flex items-center rounded-full px-4 py-2 mb-6 text-sm font-semibold text-white backdrop-blur-md"
+              style={{ background: 'rgba(255,255,255,0.15)' }}>
+              Bienvenido a TD SYNNEX
+            </span>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-4"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
               Cloud Customer
               <br />
               Success Hub
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                mb: 4,
-                opacity: 0.95,
-                maxWidth: 700,
-                color: 'white',
-                fontSize: { xs: '1.125rem', md: '1.5rem' },
-                lineHeight: 1.6,
-                textShadow: '0 1px 10px rgba(0,0,0,0.2)',
-              }}
-            >
+            </h1>
+
+            <p className="text-lg md:text-2xl text-white/95 mb-8 max-w-2xl leading-relaxed"
+              style={{ textShadow: '0 1px 10px rgba(0,0,0,0.2)' }}>
               Tu centro de recursos, conocimiento y herramientas para el éxito en
               soluciones cloud empresariales
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Button
-                variant="contained"
-                size="large"
-                component={Link}
-                href="/onboarding"
-                endIcon={<ArrowForward />}
-                sx={{
-                  bgcolor: 'white',
-                  color: 'primary.main',
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.125rem',
-                  fontWeight: 700,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                  '&:hover': {
-                    bgcolor: alpha('#ffffff', 0.9),
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 12px 28px rgba(0,0,0,0.3)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <Button href="/onboarding" variant="default" size="lg"
+                className="bg-white text-[#005657] hover:bg-white/90 shadow-xl font-bold text-base px-6">
                 Comenzar Ahora
+                <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                component={Link}
-                href="/soporte"
-                sx={{
-                  borderColor: 'white',
-                  color: 'white',
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.125rem',
-                  fontWeight: 600,
-                  backdropFilter: 'blur(10px)',
-                  bgcolor: alpha('#ffffff', 0.1),
-                  '&:hover': {
-                    borderColor: 'white',
-                    bgcolor: alpha('#ffffff', 0.2),
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
+              <Button href="/soporte" variant="outline" size="lg"
+                className="border-white/60 text-white hover:bg-white/15 backdrop-blur-sm text-base px-6">
                 Contactar Soporte
               </Button>
-            </Box>
+            </div>
           </motion.div>
-        </Container>
+        </div>
 
         {/* Scroll indicator */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 30,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1,
-          }}
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <Box
-              sx={{
-                width: 30,
-                height: 50,
-                border: '2px solid white',
-                borderRadius: '20px',
-                display: 'flex',
-                justifyContent: 'center',
-                pt: 1,
-                opacity: 0.7,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 4,
-                  height: 8,
-                  bgcolor: 'white',
-                  borderRadius: '2px',
-                }}
-              />
-            </Box>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+          <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+            <div className="w-7 h-12 rounded-[20px] border-2 border-white/70 flex justify-center pt-2">
+              <div className="w-1 h-2 rounded-full bg-white" />
+            </div>
           </motion.div>
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      {/* Sticky Scroll Words Section */}
+      {/* ── Sticky Scroll Words ── */}
       <StickyScrollWords />
 
-      {/* Stats Section */}
-      <Box
-        ref={statsRef}
-        sx={{
-          py: { xs: 8, md: 12 },
-          background: `linear-gradient(180deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(
-            theme.palette.background.default,
-            1
-          )} 100%)`,
-        }}
-      >
-        <Container maxWidth="lg">
+      {/* ── Stats ── */}
+      <div ref={statsRef} className="py-16 md:py-20 bg-gradient-to-b from-[var(--accent-subtle)]/30 to-[var(--background)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial="hidden"
             animate={statsInView ? 'visible' : 'hidden'}
-            variants={staggerContainer}
+            variants={stagger}
           >
-            <Grid container spacing={4}>
-              {stats.map((stat, index) => (
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-                  <motion.div variants={scaleIn}>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 4,
-                        textAlign: 'center',
-                        bgcolor: 'background.paper',
-                        borderRadius: 3,
-                        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-8px)',
-                          boxShadow: theme.shadows[8],
-                          borderColor: theme.palette.primary.main,
-                        },
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          color: 'primary.main',
-                          mb: 2,
-                          display: 'flex',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {stat.icon}
-                      </Box>
-                      <Typography
-                        variant="h3"
-                        fontWeight="800"
-                        color="primary.main"
-                        gutterBottom
-                      >
-                        {stat.value}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                        {stat.label}
-                      </Typography>
-                    </Paper>
-                  </motion.div>
-                </Grid>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {stats.map((stat) => (
+                <motion.div key={stat.label} variants={scaleIn}>
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-6 text-center transition-all hover:-translate-y-2 hover:shadow-lg hover:border-[#005657]/40">
+                    <div className="flex justify-center mb-3 text-[#005657]">
+                      <stat.Icon className="h-6 w-6" />
+                    </div>
+                    <p className="text-3xl font-extrabold text-[#005657] mb-1">{stat.value}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] font-medium">{stat.label}</p>
+                  </div>
+                </motion.div>
               ))}
-            </Grid>
+            </div>
           </motion.div>
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      {/* Features Section */}
-      <Box ref={featuresRef} sx={{ py: { xs: 8, md: 12 } }}>
-        <Container maxWidth="lg">
-          <motion.div
-            initial="hidden"
-            animate={featuresInView ? 'visible' : 'hidden'}
-            variants={fadeInUp}
-          >
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip
-                label="Características"
-                color="primary"
-                sx={{ mb: 2, fontWeight: 600 }}
-              />
-              <Typography variant="h2" fontWeight="800" gutterBottom>
+      {/* ── Features ── */}
+      <div ref={featuresRef} className="py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <motion.div initial="hidden" animate={featuresInView ? 'visible' : 'hidden'} variants={fadeInUp}>
+            <div className="text-center mb-12">
+              <span className="inline-flex items-center rounded-full bg-[var(--accent-subtle)] text-[#005657] px-3 py-1 text-xs font-semibold mb-3">
+                Características
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-[var(--foreground)] mb-3">
                 Todo lo que necesitas para el éxito
-              </Typography>
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                sx={{ maxWidth: 700, mx: 'auto' }}
-              >
+              </h2>
+              <p className="text-[var(--muted-foreground)] max-w-xl mx-auto">
                 Herramientas y recursos diseñados para maximizar tu inversión cloud
-              </Typography>
-            </Box>
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
             initial="hidden"
             animate={featuresInView ? 'visible' : 'hidden'}
-            variants={staggerContainer}
+            variants={stagger}
           >
-            <Grid container spacing={4}>
-              {features.map((feature, index) => (
-                <Grid size={{ xs: 12, sm: 6 }} key={index}>
-                  <motion.div variants={fadeInUp}>
-                    <Card
-                      elevation={0}
-                      sx={{
-                        p: 4,
-                        height: '100%',
-                        borderRadius: 4,
-                        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                        position: 'relative',
-                        overflow: 'hidden',
-                        transition: 'all 0.4s ease',
-                        '&:hover': {
-                          transform: 'translateY(-8px)',
-                          boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
-                          '& .feature-icon': {
-                            transform: 'scale(1.1) rotate(5deg)',
-                          },
-                        },
-                      }}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {features.map((f) => (
+                <motion.div key={f.title} variants={fadeInUp}>
+                  <div className="group rounded-xl border border-[var(--border)] bg-[var(--background)] p-6 h-full transition-all hover:-translate-y-2 hover:shadow-xl">
+                    <div
+                      className="w-14 h-14 rounded-xl flex items-center justify-center text-white mb-5 transition-transform group-hover:scale-110 group-hover:rotate-3"
+                      style={{ background: f.gradient }}
                     >
-                      <Box
-                        className="feature-icon"
-                        sx={{
-                          width: 60,
-                          height: 60,
-                          borderRadius: 3,
-                          background: feature.gradient,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          mb: 3,
-                          transition: 'all 0.3s ease',
-                        }}
-                      >
-                        {feature.icon}
-                      </Box>
-                      <Typography variant="h5" fontWeight="700" gutterBottom>
-                        {feature.title}
-                      </Typography>
-                      <Typography variant="body1" color="text.secondary" lineHeight={1.7}>
-                        {feature.description}
-                      </Typography>
-                    </Card>
-                  </motion.div>
-                </Grid>
+                      <f.Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-[var(--foreground)] mb-2">{f.title}</h3>
+                    <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{f.description}</p>
+                  </div>
+                </motion.div>
               ))}
-            </Grid>
+            </div>
           </motion.div>
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      {/* Sections Navigation */}
-      <Box
+      {/* ── Sections Navigation ── */}
+      <div
         ref={sectionsRef}
-        sx={{
-          py: { xs: 8, md: 12 },
-          background: `linear-gradient(180deg, ${alpha(
-            theme.palette.background.default,
-            1
-          )} 0%, ${alpha(theme.palette.primary.main, 0.03)} 100%)`,
-        }}
+        className="py-16 md:py-20 bg-gradient-to-b from-[var(--background)] to-[var(--accent-subtle)]/20"
       >
-        <Container maxWidth="lg">
-          <motion.div
-            initial="hidden"
-            animate={sectionsInView ? 'visible' : 'hidden'}
-            variants={fadeInUp}
-          >
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip
-                label="Explorar Secciones"
-                color="primary"
-                sx={{ mb: 2, fontWeight: 600 }}
-              />
-              <Typography variant="h2" fontWeight="800" gutterBottom>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <motion.div initial="hidden" animate={sectionsInView ? 'visible' : 'hidden'} variants={fadeInUp}>
+            <div className="text-center mb-12">
+              <span className="inline-flex items-center rounded-full bg-[var(--accent-subtle)] text-[#005657] px-3 py-1 text-xs font-semibold mb-3">
+                Explorar Secciones
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-[var(--foreground)] mb-3">
                 Navega por nuestras áreas especializadas
-              </Typography>
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                sx={{ maxWidth: 700, mx: 'auto' }}
-              >
-                Cada sección está diseñada para proporcionarte información y herramientas
-                específicas
-              </Typography>
-            </Box>
+              </h2>
+              <p className="text-[var(--muted-foreground)] max-w-xl mx-auto">
+                Cada sección está diseñada para proporcionarte información y herramientas específicas
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
             initial="hidden"
             animate={sectionsInView ? 'visible' : 'hidden'}
-            variants={staggerContainer}
+            variants={stagger}
           >
-            <Grid container spacing={3}>
-              {sections.map((section, index) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={section.href}>
-                  <motion.div variants={scaleIn} whileHover={{ scale: 1.03 }}>
-                    <Card
-                      component={Link}
-                      href={section.href}
-                      elevation={2}
-                      sx={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        textDecoration: 'none',
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        position: 'relative',
-                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          transform: 'translateY(-12px)',
-                          boxShadow: theme.shadows[12],
-                          '& .section-arrow': {
-                            transform: 'translateX(8px)',
-                          },
-                          '& .section-bg': {
-                            transform: 'scale(1.1)',
-                          },
-                        },
-                      }}
-                    >
-                      <Box
-                        className="section-bg"
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          right: 0,
-                          width: '100%',
-                          height: '100%',
-                          background: `linear-gradient(135deg, ${alpha(
-                            section.color,
-                            0.05
-                          )} 0%, transparent 100%)`,
-                          transition: 'transform 0.6s ease',
-                        }}
-                      />
-                      <CardContent sx={{ flex: 1, position: 'relative', p: 3 }}>
-                        <Box
-                          sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: 2,
-                            bgcolor: alpha(section.color, 0.15),
-                            color: section.color,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            mb: 2,
-                          }}
-                        >
-                          {section.icon}
-                        </Box>
-                        <Typography variant="h5" fontWeight="700" gutterBottom>
-                          {section.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" lineHeight={1.7}>
-                          {section.description}
-                        </Typography>
-                        <Box
-                          className="section-arrow"
-                          sx={{
-                            mt: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            color: section.color,
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
-                            transition: 'transform 0.3s ease',
-                          }}
-                        >
-                          Explorar
-                          <ArrowForward sx={{ ml: 0.5, fontSize: '1rem' }} />
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Grid>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {sections.map((section) => (
+                <motion.div key={section.href} variants={scaleIn} whileHover={{ scale: 1.03 }}>
+                  <Link
+                    href={section.href}
+                    className="group relative flex flex-col h-full rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden transition-all hover:-translate-y-3 hover:shadow-xl"
+                  >
+                    {/* Background tint */}
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ background: `linear-gradient(135deg, ${section.color}08 0%, transparent 100%)` }}
+                    />
+                    <div className="relative p-5 flex-1">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                        style={{ background: `${section.color}22`, color: section.color }}
+                      >
+                        <section.icon className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-lg font-bold text-[var(--foreground)] mb-1">{section.title}</h3>
+                      <p className="text-sm text-[var(--muted-foreground)] leading-relaxed">{section.description}</p>
+                      <div
+                        className="mt-3 flex items-center text-sm font-semibold transition-transform group-hover:translate-x-2"
+                        style={{ color: section.color }}
+                      >
+                        Explorar
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
               ))}
-            </Grid>
+            </div>
           </motion.div>
-        </Container>
-      </Box>
+        </div>
+      </div>
 
-      {/* CTA Section */}
-      <Box
-        sx={{
-          py: { xs: 8, md: 12 },
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <Container maxWidth="lg">
+      {/* ── CTA ── */}
+      <div className="py-16 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 4, md: 8 },
-                borderRadius: 4,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${alpha(
-                  theme.palette.primary.dark,
-                  0.9
-                )} 100%)`,
-                color: 'white',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
+            <div
+              className="relative rounded-2xl overflow-hidden px-8 md:px-16 py-12 text-white text-center"
+              style={{ background: 'linear-gradient(135deg, #003031 0%, #005657 100%)' }}
             >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: -100,
-                  right: -100,
-                  width: 300,
-                  height: 300,
-                  borderRadius: '50%',
-                  bgcolor: alpha('#ffffff', 0.1),
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: -150,
-                  left: -100,
-                  width: 400,
-                  height: 400,
-                  borderRadius: '50%',
-                  bgcolor: alpha('#ffffff', 0.05),
-                }}
-              />
+              {/* Decorative circles */}
+              <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/10" />
+              <div className="absolute -bottom-36 -left-24 w-96 h-96 rounded-full bg-white/5" />
 
-              <Box sx={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
-                <Typography variant="h2" fontWeight="800" gutterBottom>
-                  ¿Listo para comenzar?
-                </Typography>
-                <Typography variant="h6" sx={{ mb: 4, opacity: 0.95 }}>
-                  Únete a cientos de empresas que ya confían en TD SYNNEX para su
-                  transformación cloud
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    component={Link}
-                    href="/onboarding"
-                    endIcon={<ArrowForward />}
-                    sx={{
-                      bgcolor: 'white',
-                      color: 'primary.main',
-                      px: 4,
-                      py: 1.5,
-                      fontSize: '1.125rem',
-                      fontWeight: 700,
-                      '&:hover': {
-                        bgcolor: alpha('#ffffff', 0.9),
-                        transform: 'translateY(-2px)',
-                      },
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
+              <div className="relative z-10 max-w-2xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-extrabold mb-3">¿Listo para comenzar?</h2>
+                <p className="text-white/90 text-lg mb-8">
+                  Únete a cientos de empresas que ya confían en TD SYNNEX para su transformación cloud
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button href="/onboarding" variant="default" size="lg"
+                    className="bg-white text-[#005657] hover:bg-white/90 font-bold text-base px-6">
                     Empezar Ahora
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    component={Link}
-                    href="/soporte"
-                    sx={{
-                      borderColor: 'white',
-                      color: 'white',
-                      px: 4,
-                      py: 1.5,
-                      fontSize: '1.125rem',
-                      fontWeight: 600,
-                      '&:hover': {
-                        borderColor: 'white',
-                        bgcolor: alpha('#ffffff', 0.1),
-                        transform: 'translateY(-2px)',
-                      },
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
+                  <Button href="/soporte" variant="outline" size="lg"
+                    className="border-white/50 text-white hover:bg-white/15 text-base px-6">
                     Hablar con un Experto
                   </Button>
-                </Box>
-              </Box>
-            </Paper>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </Container>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

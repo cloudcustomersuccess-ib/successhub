@@ -1,7 +1,5 @@
-'use client';
-
 import { ReactNode } from 'react';
-import { Box, Typography, Divider } from '@mui/material';
+import { Separator } from './separator';
 
 interface SectionHeaderProps {
   title: string;
@@ -12,39 +10,22 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, subtitle, icon, action }: SectionHeaderProps) {
   return (
-    <Box sx={{ mb: 4 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 1,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-3">
           {icon && (
-            <Box
-              sx={{
-                color: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              {icon}
-            </Box>
+            <span className="text-[#005657] flex items-center">{icon}</span>
           )}
-          <Typography variant="h4" component="h2" fontWeight="bold">
-            {title}
-          </Typography>
-        </Box>
-        {action && <Box>{action}</Box>}
-      </Box>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">{title}</h2>
+        </div>
+        {action && <div>{action}</div>}
+      </div>
       {subtitle && (
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+        <p className="text-sm text-[var(--muted-foreground)] leading-relaxed mb-3">
           {subtitle}
-        </Typography>
+        </p>
       )}
-      <Divider />
-    </Box>
+      <Separator />
+    </div>
   );
 }

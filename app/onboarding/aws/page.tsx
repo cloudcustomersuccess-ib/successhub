@@ -21,7 +21,6 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/language-provider';
-import { useThemeMode } from '@/lib/theme-registry';
 import { guideData as guideDataEs } from './data';
 import { guideData as guideDataEn } from './data.en';
 import { guideData as guideDataPt } from './data.pt';
@@ -569,8 +568,6 @@ function PhaseHeader({ step }: { step: any }) {
 
 export default function AWSOnboardingPage() {
   const { language } = useLanguage();
-  const { mode } = useThemeMode();
-
   const guideData = guideDataByLocale[language];
   const uiText = uiTextByLocale[language];
 
@@ -676,7 +673,7 @@ export default function AWSOnboardingPage() {
   };
 
   return (
-    <div className={cn('min-h-screen bg-[var(--background)]', mode === 'dark' && 'dark')}>
+    <div className="min-h-screen bg-[var(--background)]">
       {/* ── Sticky progress bar ── */}
       {showProgress && (
         <div className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">

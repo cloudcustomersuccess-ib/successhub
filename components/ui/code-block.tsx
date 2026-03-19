@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { Box, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
-import { ContentCopy, Check } from '@mui/icons-material';
+import { Copy, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CodeBlockProps {
   children: ReactNode;
@@ -10,9 +10,8 @@ interface CodeBlockProps {
   showLineNumbers?: boolean;
 }
 
-export function CodeBlock({ children, language, showLineNumbers = false }: CodeBlockProps) {
+export function CodeBlock({ children, language }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const theme = useTheme();
 
   const handleCopy = () => {
     const text = typeof children === 'string' ? children : String(children);
@@ -22,56 +21,29 @@ export function CodeBlock({ children, language, showLineNumbers = false }: CodeB
   };
 
   return (
-    <Box
-      sx={{
-        position: 'relative',
-        borderRadius: 2,
-        overflow: 'hidden',
-        mb: 2,
-      }}
-    >
+    <div className="relative rounded-lg overflow-hidden border border-[var(--border)] mb-4">
       {language && (
-        <Box
-          sx={{
-            bgcolor: theme.palette.mode === 'light' ? 'grey.200' : 'grey.800',
-            px: 2,
-            py: 0.5,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              fontFamily: 'monospace',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-            }}
-          >
+        <div className="flex items-center justify-between bg-[var(--muted)] px-4 py-1.5 border-b border-[var(--border)]">
+          <span className="text-xs font-semibold font-mono uppercase text-[var(--muted-foreground)]">
             {language}
-          </Typography>
-          <Tooltip title={copied ? 'Copiado!' : 'Copiar código'}>
-            <IconButton size="small" onClick={handleCopy}>
-              {copied ? <Check fontSize="small" /> : <ContentCopy fontSize="small" />}
-            </IconButton>
-          </Tooltip>
-        </Box>
+          </span>
+          <button
+            onClick={handleCopy}
+            title={copied ? 'Copiado!' : 'Copiar código'}
+            className={cn(
+              'rounded p-1 transition-colors',
+              copied
+                ? 'text-emerald-600'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+            )}
+          >
+            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+          </button>
+        </div>
       )}
-      <Box
-        component="pre"
-        sx={{
-          bgcolor: theme.palette.mode === 'light' ? 'grey.100' : 'grey.900',
-          p: 2,
-          m: 0,
-          overflow: 'auto',
-          fontFamily: 'monospace',
-          fontSize: '0.875rem',
-          lineHeight: 1.6,
-        }}
-      >
+      <pre className="bg-[var(--muted)] dark:bg-[#111] p-4 m-0 overflow-auto font-mono text-sm leading-relaxed text-[var(--foreground)]">
         <code>{children}</code>
-      </Box>
-    </Box>
+      </pre>
+    </div>
   );
 }
