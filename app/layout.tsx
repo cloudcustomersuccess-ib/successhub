@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./globals.css";
 import ThemeRegistry from "@/lib/theme-registry";
 import GlobalHeader from "@/components/global-header";
 import LenisWrapper from "@/components/lenis-wrapper";
