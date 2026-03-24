@@ -199,21 +199,56 @@ export const guideData = {
     {
       id: "2.1",
       title: "Passo 2.1 | Registo no AWS Partner Central",
-      summary: "Para completares o registo no AWS Partner Central, precisas de ter previamente uma conta AWS.",
+      summary: "Para te registares no AWS Partner Central, vais precisar de uma conta AWS designada para este serviço e, em muitos casos, do apoio do teu administrador de IAM para preparar o acesso correto.",
       meta: {
         badge_or_tag: "Tu és o owner deste passo"
       },
+      prerequisites: [
+        "Tem disponível uma conta AWS que servirá de base ao registo no AWS Partner Central.",
+        "Define quem será o alliance lead: essa pessoa vai concluir o registo e tornar-se o contacto principal inicial.",
+        "Se não geres IAM na tua organização, alinha-te com IT ou com o administrador de IAM antes de começar."
+      ],
       instructions: [
         {
-          title: "Processo de registo",
+          title: "Preparar o registo",
           bullets: [
-            "Ir para APN Marketing: Entra na página de APN Marketing e clica em Become a partner",
-            "Ter uma conta AWS designada: Deves usar uma conta AWS específica para registar o serviço",
-            "Contactar o admin de IAM (se aplicável): Pode ser necessário apoio do administrador de IAM",
-            "Escolher a conta AWS correta: Identifica a conta AWS que será vinculada ao Partner Central",
-            "Atribuir permissões ao alliance lead: O admin de IAM deve dar acesso nessa conta ao utilizador que fará o registo",
-            "Iniciar sessão na AWS Console: o alliance lead entra na Consola da AWS",
-            "Abrir o AWS Partner Central e começar: na consola, procura AWS Partner Central e clica em Get started"
+            {
+              segments: [
+                { text: "Acede à " },
+                { type: "link", label: "página APN Marketing", href: "https://aws.amazon.com/partners/" },
+                { text: " e clica em " },
+                { text: "Become a partner", className: "font-semibold text-slate-800" }
+              ]
+            },
+            "Garante que vais usar uma conta AWS específica para registar o serviço. Todos os utilizadores do AWS Partner Central serão aprovisionados nessa conta.",
+            {
+              segments: [
+                { text: "Identifica a conta AWS correta para o AWS Partner Central. Para mais contexto, revê " },
+                { type: "link", label: "Linking AWS Partner Central and AWS accounts", href: "https://docs.aws.amazon.com/partner-central/latest/getting-started/linking-apc-aws-marketplace.html" }
+              ]
+            }
+          ]
+        },
+        {
+          title: "Acesso do alliance lead",
+          bullets: [
+            "Pede ao teu administrador de IAM que aprovisione acesso à conta escolhida para a pessoa que vai executar o registo.",
+            "Essa pessoa, o alliance lead, deve estar autorizada a aceitar os termos do AWS Partner Network e do AWS Customer Engagement program em nome da tua organização.",
+            {
+              segments: [
+                { text: "Se precisares de confirmar as permissões recomendadas, consulta " },
+                { type: "link", label: "AWS managed policies for AWS Partner Central users", href: "https://docs.aws.amazon.com/partner-central/latest/getting-started/managed-policies.html" }
+              ]
+            },
+            "Depois do acesso ser concedido, o alliance lead deve iniciar sessão na AWS Console com credenciais IAM ou por SSO se a tua organização já o tiver ativado.",
+            "Clica em Sign In para aceder à página principal da AWS Console."
+          ]
+        },
+        {
+          title: "Abrir o serviço",
+          bullets: [
+            "Na AWS Console, procura AWS Partner Central usando a navegação da consola ou a pesquisa.",
+            "Abre o AWS Partner Central e clica em Get started para iniciares o fluxo de registo."
           ]
         }
       ],
@@ -221,8 +256,23 @@ export const guideData = {
         {
           type: "success",
           text: "Se a tua organização já dispõe de AWS Partner Central, não cries um novo, passa diretamente para o passo 2.2."
+        },
+        {
+          type: "warning",
+          title: "Importante",
+          text: "A AWS indica que muitas organizações precisam do apoio do administrador de IAM para concluir este processo. Se não sabes quem é essa pessoa, valida com IT ou com a equipa que gere as contas AWS."
+        },
+        {
+          type: "info",
+          title: "Início de sessão",
+          text: "Se a tua organização já usa single sign-on com a AWS Console, poderás continuar com as tuas credenciais habituais. Caso contrário, vais precisar do AWS account ID de 12 dígitos e das credenciais fornecidas pelo teu administrador de IAM."
         }
       ],
+      officialGuide: {
+        buttonLabel: "Abrir guia oficial da AWS",
+        sheetTitle: "Guia oficial · AWS Partner Central registration",
+        src: "/onboarding/aws/official-guide/partner-central-registration"
+      },
       links: [
         {
           label: "APN Marketing",
@@ -231,6 +281,10 @@ export const guideData = {
         {
           label: "AWS Partner Central",
           href: "https://partnercentral.awspartner.com/partnercentral2/s/login"
+        },
+        {
+          label: "Contactar APN Support",
+          href: "https://www.apn-portal.com/knowledgebase/?cu=1&fs=ContactUs&l=en_US"
         }
       ]
     },

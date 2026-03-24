@@ -22,31 +22,40 @@ export const guideData = {
     {
       id: "1",
       title: "Paso 1. Alta en TD SYNNEX",
-      summary: "En este primer paso completarás el alta como partner de TD SYNNEX y, a continuación, solicitarás la línea de crédito que se asignará como método de pago para todas tus transacciones en nuestra plataforma StreamOne® ION.",
+      summary: "En este primer paso crearás tu cuenta de partner en TD SYNNEX y completarás la solicitud de la línea de crédito con la que operará tu organización en StreamOne® ION.",
       instructions: [],
       notes: [],
       links: []
     },
     {
       id: "1.1",
-      title: "Paso 1.1 | Hola TD SYNNEX",
-      summary: "Para registrar tu cuenta como partner de TD SYNNEX accede al formulario de registro de Hola TD SYNNEX y cumplimenta toda la información solicitada.",
+      title: "Paso 1.1 | Formulario de alta en TD SYNNEX",
+      summary: "Para crear tu cuenta y obtener tus credenciales de partner de TD SYNNEX deberás acceder al formulario de registro y cumplimentar la información solicitada en todas las páginas.",
       meta: {
         badge_or_tag: "Tú eres el owner de este paso"
       },
-      prerequisites: [
-        "Prepara 1 documento acreditativo del epígrafe/actividad antes de comenzar.",
-        "IAE (Impuesto de Actividades Económicas): Copia del último impuesto/recibo de pago donde se vea claramente el epígrafe.",
-        "Declaración censal (036): Copia del modelo 036 donde se vea claramente el epígrafe en el que estás inscrito.",
-        "Certificado AEAT: Copia del certificado de revendedor AEAT."
-      ],
       instructions: [
         {
-          title: "Pasos para el registro",
+          title: "Formulario de alta",
           bullets: [
-            "Accede al formulario de registro de Hola TD SYNNEX: https://www.holatdsynnex.com/alta_cliente_td_synnex.html",
-            "Haz clic en Alta Cliente TD SYNNEX",
-            "Cumplimenta toda la información solicitada y lee y acepta los términos y condiciones de TD SYNNEX",
+            {
+              segments: [
+                { text: "Accede al formulario de registro de " },
+                { type: "link", label: "Hola TD SYNNEX", href: "https://www.holatdsynnex.com/alta_cliente_td_synnex.html" }
+              ]
+            },
+            {
+              segments: [
+                { text: "Haz clic en " },
+                { type: "button", label: "Alta Cliente en TD SYNNEX", href: "https://eu.tdsynnex.com/" }
+              ]
+            },
+            {
+              segments: [
+                { text: "Cumplimenta toda la información solicitada y lee y acepta los términos y condiciones de " },
+                { type: "link", label: "TD SYNNEX", href: "https://eu.tdsynnex.com/terms-conditions" }
+              ]
+            },
             "Haz lo mismo con las páginas siguientes",
             "Pulsa en Enviar para completar la solicitud"
           ]
@@ -54,45 +63,63 @@ export const guideData = {
       ],
       notes: [
         {
-          type: "note",
-          text: "Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez completes y envíes el formulario."
+          type: "info",
+          title: "Ten a mano...",
+          text: "Antes de iniciar este paso ten a mano cualquiera de los siguientes documentos:",
+          items: [
+            "IAE (Impuesto de Actividades Económicas): Copia del último impuesto/recibo de pago donde se vea claramente el epígrafe.",
+            "Declaración censal (036): Copia del modelo 036 donde se vea claramente el epígrafe en el que estás inscrito.",
+            "Certificado AEAT: Copia del certificado de revendedor AEAT."
+          ]
+        },
+        {
+          type: "info",
+          title: "Términos y condiciones",
+          body: [
+            {
+              segments: [
+                { text: "Durante este paso aceptarás los términos y condiciones de TD SYNNEX. Puedes consultar estos términos a través de " },
+                { type: "link", label: "este enlace", href: "https://eu.tdsynnex.com/terms-conditions" },
+                { text: "." }
+              ]
+            }
+          ]
         }
       ],
       links: [
         {
-          label: "Formulario de registro de Hola TD SYNNEX",
+          label: "Alta de cliente | Trabaja con TD SYNNEX",
           href: "https://www.holatdsynnex.com/alta_cliente_td_synnex.html"
-        },
-        {
-          label: "Términos y condiciones de TD SYNNEX",
-          href: "https://eu.tdsynnex.com/terms-conditions"
         }
       ]
     },
     {
       id: "1.2",
-      title: "Paso 1.2 | Tu cuenta de cliente",
-      summary: "Tras enviar el formulario en Hola TD SYNNEX, nuestro equipo de Alta Clientes procederá con la revisión de la información aportada y procederá con la creación de tu cuenta de partner.",
+      title: "Paso 1.2 | Creación de cuenta",
+      summary: "Una vez cumplimentado el formulario desde TD SYNNEX revisaremos la información proporcionada y se creará tu perfil de partner. Al mismo tiempo, se generarán las credenciales de acceso a TD SYNNEX, tu TD SYNNEX Login. Este login te servirá para acceder a todas las aplicaciones de TD SYNNEX, entre otras, StreamOne® ION.",
       meta: {
         badge_or_tag: "TD SYNNEX es el owner de este paso"
       },
-      instructions: [
-        {
-          title: "",
-          bullets: [
-            "En este punto es posible que nuestro equipo de altas te contacte para solicitarte información adicional en caso de ser preciso",
-            "Si es el caso, recibirás un correo de altaclientes.es@tdsynnex.com",
-            "Si no recibes confirmación en un plazo de 48 horas laborales, puedes contactar con: Alta Clientes ≫ altaclientes.es@tdsynnex.com",
-            "Customer Success ≫ customersuccess.es@tdsynnex.com",
-            "Tu CSM ≫ encontrarás su correo en Growth Lab",
-            "Una vez creada tu cuenta recibirás una confirmación por correo electrónico de Alta Clientes"
-          ]
-        }
-      ],
       notes: [
         {
-          type: "note",
-          text: "Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez recibas confirmación de tu cuenta."
+          type: "warning",
+          title: "¿Aún no te hemos confirmado tu cuenta?",
+          body: [
+            {
+              segments: [
+                { text: "Si ya has completado el formulario de registro del paso anterior y no te hemos respondido durante las siguientes 48 horas, revisa tu buzón de correo en busca de un mensaje de " },
+                { text: "altaclientes.es@tdsynnex.com", className: "font-medium" },
+                { text: ". Es posible que necesitemos algo más de información antes de crear tu cuenta." }
+              ]
+            },
+            {
+              segments: [
+                { text: "Si no es el caso, puedes contactar con " },
+                { text: "altaclientes.es@tdsynnex.com", className: "font-medium" },
+                { text: " y preguntar por el estado de tu cuenta." }
+              ]
+            }
+          ]
         }
       ],
       links: []
@@ -100,7 +127,7 @@ export const guideData = {
     {
       id: "1.3",
       title: "Paso 1.3 | Solicitud de la línea de crédito",
-      summary: "Ahora que ya dispones de tu cuenta de cliente en TD SYNNEX es momento de completar la solicitud de la línea de crédito con la que operará tu organización desde StreamOne® ION.",
+      summary: "Una vez dispongas de tu cuenta de cliente en TD SYNNEX es momento de completar la solicitud de la línea de crédito con la que operará tu organización desde StreamOne® ION.",
       meta: {
         badge_or_tag: "Tú eres el owner de este paso"
       },
@@ -108,10 +135,20 @@ export const guideData = {
         {
           title: "Solicitud SEPA B2B",
           bullets: [
-            "Accede al formulario SEPA B2B: https://www.holatdsynnex.com/sepaB2B.html",
-            "Inicia sesión con tu cuenta de TD SYNNEX",
-            "Completa el formulario con toda la información solicitada y pulsa en Enviar SEPA",
-            "Recibe un correo electrónico con un SEPA B2B adjunto, ya cumplimentado",
+            {
+              segments: [
+                { text: "Accede al " },
+                { type: "link", label: "formulario SEPA B2B", href: "https://www.holatdsynnex.com/sepaB2B.html" }
+              ]
+            },
+            "Inicia sesión con tu cuenta de TD SYNNEX (TD SYNNEX Login)",
+            {
+              segments: [
+                { text: "Completa el formulario con toda la información solicitada y pulsa en " },
+                { type: "button", label: "Enviar Orden SEPA", href: "https://www.holatdsynnex.com/sepaB2B.html", className: "rounded-none border-0 bg-blue-600 hover:bg-blue-700" }
+              ]
+            },
+            "Recibirás un correo electrónico con un SEPA B2B adjunto, ya cumplimentado",
             "Firma el documento manualmente o digitalmente",
             "Regresa al formulario y adjunta el SEPA B2B firmado y el certificado de titularidad"
           ]
@@ -146,14 +183,10 @@ export const guideData = {
         }
       ],
       notes: [
-        {
-          type: "note",
-          text: "Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez enviado el SEPA B2B y el certificado de titularidad."
-        }
       ],
       links: [
         {
-          label: "Formulario SEPA B2B",
+          label: "Ir al formulario de solicitud de crédito",
           href: "https://www.holatdsynnex.com/sepaB2B.html"
         }
       ]
@@ -161,24 +194,20 @@ export const guideData = {
     {
       id: "1.4",
       title: "Paso 1.4 | Asignación de condiciones de crédito",
-      summary: "Tras completar y enviar el SEPA B2B y el certificado de titularidad, nuestro equipo financiero revisará la solicitud.",
+      summary: "Tras enviar el SEPA B2B y el certificado de titularidad, nuestro equipo financiero revisará la solicitud. Desde TD SYNNEX te confirmaremos una vez las condiciones de crédito hayan sido asignadas. Si no recibes información al respecto contacta con tu Customer Success Manager.",
       meta: {
         badge_or_tag: "TD SYNNEX es el owner de este paso"
       },
-      instructions: [
-        {
-          title: "",
-          bullets: [
-            "Es posible que en este punto el equipo financiero o tu Customer Success Manager te solicite información adicional",
-            "Esta información suele ser: Impuesto de sociedades de los dos últimos ejercicios, Balance de cuentas provisional, Último impuesto de sociedades",
-            "Desde TD SYNNEX te confirmaremos una vez las condiciones de crédito hayan sido asignadas"
-          ]
-        }
-      ],
       notes: [
         {
           type: "info",
-          text: "Si utilizas Growth Lab, este paso se marcará como completado una vez tus condiciones de crédito queden autorizadas y operativas."
+          title: "Información adicional",
+          text: "Es posible que en este punto el equipo financiero o tu Customer Success Manager te solicite información adicional.",
+          items: [
+            "Impuesto de sociedades de los dos últimos ejercicios",
+            "Balance de cuentas provisional",
+            "Último impuesto de sociedades"
+          ]
         }
       ],
       links: []
@@ -199,21 +228,56 @@ export const guideData = {
     {
       id: "2.1",
       title: "Paso 2.1 | Alta en AWS Partner Central",
-      summary: "Para completar el registro en AWS Partner Central necesitarás disponer previamente de una cuenta de AWS.",
+      summary: "Para registrarte en AWS Partner Central necesitarás una cuenta de AWS designada para este servicio y, en muchos casos, la ayuda de tu administrador de IAM para preparar el acceso correcto.",
       meta: {
         badge_or_tag: "Tú eres el owner de este paso"
       },
+      prerequisites: [
+        "Dispón de una cuenta de AWS que será la cuenta base del registro en AWS Partner Central.",
+        "Define quién actuará como alliance lead: será la persona que complete el registro y gestione el acceso inicial.",
+        "Si no administras IAM en tu organización, coordínate con tu equipo de IT o con el administrador de IAM antes de empezar."
+      ],
       instructions: [
         {
-          title: "Proceso de registro",
+          title: "Preparar el registro",
           bullets: [
-            "Ir a APN Marketing: Entra en la página de APN Marketing y haz clic en Become a partner",
-            "Dispón de una cuenta de AWS designada: Debes usar una cuenta de AWS específica para registrar el servicio",
-            "Contactar con el admin de IAM (si aplica): Puede que necesites soporte del administrador de IAM",
-            "Elegir la cuenta de AWS correcta: Identifica la cuenta de AWS que se vinculará a Partner Central",
-            "Aprovisionar permisos al alliance lead: El admin de IAM debe dar acceso en esa cuenta al usuario que hará el registro",
-            "Iniciar sesión en AWS Console: El alliance lead entra en la Consola de AWS",
-            "Abrir AWS Partner Central y empezar: En la consola, busca AWS Partner Central y pulsa Get started"
+            {
+              segments: [
+                { text: "Accede a la " },
+                { type: "link", label: "página APN Marketing", href: "https://aws.amazon.com/partners/" },
+                { text: " y haz clic en " },
+                { text: "Become a partner", className: "font-semibold text-slate-800" }
+              ]
+            },
+            "Asegúrate de que usarás una cuenta de AWS específica para registrar el servicio. Todos los usuarios de AWS Partner Central se aprovisionarán sobre esa cuenta.",
+            {
+              segments: [
+                { text: "Identifica la cuenta de AWS correcta para AWS Partner Central. Si necesitas contexto adicional, revisa " },
+                { type: "link", label: "Linking AWS Partner Central and AWS accounts", href: "https://docs.aws.amazon.com/partner-central/latest/getting-started/linking-apc-aws-marketplace.html" }
+              ]
+            }
+          ]
+        },
+        {
+          title: "Acceso del alliance lead",
+          bullets: [
+            "Pide a tu administrador de IAM que aprovisione acceso a la cuenta elegida para la persona que hará el registro.",
+            "Esa persona, el alliance lead, debe estar autorizada para aceptar los términos del AWS Partner Network y del AWS Customer Engagement program en nombre de tu organización.",
+            {
+              segments: [
+                { text: "Si necesitas revisar los permisos recomendados, consulta " },
+                { type: "link", label: "AWS managed policies for AWS Partner Central users", href: "https://docs.aws.amazon.com/partner-central/latest/getting-started/managed-policies.html" }
+              ]
+            },
+            "Una vez concedido el acceso, el alliance lead deberá iniciar sesión en la AWS Console con sus credenciales IAM o mediante SSO si tu organización ya lo tiene habilitado.",
+            "Pulsa en Sign In para acceder a la página principal de la AWS Console."
+          ]
+        },
+        {
+          title: "Abrir el servicio",
+          bullets: [
+            "Desde la AWS Console, busca AWS Partner Central usando la navegación de la consola o el buscador.",
+            "Abre el servicio AWS Partner Central y pulsa en Get started para comenzar el flujo de registro."
           ]
         }
       ],
@@ -221,8 +285,23 @@ export const guideData = {
         {
           type: "success",
           text: "Si tu organización ya dispone de AWS Partner Central, no crees uno nuevo, pasa directamente al paso 2.2."
+        },
+        {
+          type: "warning",
+          title: "Importante",
+          text: "AWS indica que es habitual necesitar ayuda del administrador de IAM para completar este registro. Si no sabes quién es, revisa con IT o con el equipo que gestiona las cuentas AWS de tu organización."
+        },
+        {
+          type: "info",
+          title: "Inicio de sesión",
+          text: "Si tu organización ya usa single sign-on con la AWS Console, podrás acceder con tus credenciales habituales. Si no, necesitarás el AWS account ID de 12 dígitos y las credenciales facilitadas por tu administrador de IAM."
         }
       ],
+      officialGuide: {
+        buttonLabel: "Abrir guía oficial de AWS",
+        sheetTitle: "Guía oficial · AWS Partner Central registration",
+        src: "/onboarding/aws/official-guide/partner-central-registration"
+      },
       links: [
         {
           label: "APN Marketing",
@@ -231,6 +310,10 @@ export const guideData = {
         {
           label: "AWS Partner Central",
           href: "https://partnercentral.awspartner.com/partnercentral2/s/login"
+        },
+        {
+          label: "Contactar con APN Support",
+          href: "https://www.apn-portal.com/knowledgebase/?cu=1&fs=ContactUs&l=en_US"
         }
       ]
     },
