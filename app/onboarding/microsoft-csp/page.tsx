@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   ArrowLeft,
   ExternalLink,
@@ -9,8 +9,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   AlertCircle,
+  BadgeCheck,
   Mail,
   FileText,
+  FileCheck,
+  Fingerprint,
   User,
   Building2,
   Clock,
@@ -21,19 +24,31 @@ import {
   Copy,
   Check,
   BookOpen,
+  ShieldCheck,
   Square,
+  VenetianMask,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/language-provider';
 import { guideData as awsDataEs } from '../aws/data';
 import { guideData as awsDataEn } from '../aws/data.en';
 import { guideData as awsDataPt } from '../aws/data.pt';
 import { guideData as msGuideData } from './data';
-import type { AnyBullet, Seg, StepNote } from './data';
+import type { AnyBullet, Seg } from './data';
 import { MaicppInfo } from './maicpp-info';
+import { CspOverview } from './csp-overview';
+import { VerificationHelp } from './verification-help';
 import { cn } from '@/lib/utils';
 import { Accordion } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import {
   HoverCard,
   HoverCardContent,
@@ -284,6 +299,10 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
     <>
       {segs.map((seg, i) => {
         if (seg.t === 'text') return <span key={i}>{seg.s}</span>;
+        if (seg.t === 'breadcrumb')
+          return (
+            <PartnerCenterBreadcrumb key={i} items={seg.items} />
+          );
         if (seg.t === 'link')
           return (
             <LinkHoverCard key={i} href={seg.href} title={seg.s}>
@@ -291,9 +310,10 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
                 href={seg.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-[#005657] underline decoration-[#005657]/35 underline-offset-4 transition-colors hover:text-[#003031] hover:decoration-[#005657]"
+                className="inline-flex items-center gap-1 font-medium text-[#005657] underline decoration-[#005657]/35 underline-offset-4 transition-colors hover:text-[#003031] hover:decoration-[#005657]"
               >
                 {seg.s}
+                <ExternalLink className="h-3 w-3 shrink-0" />
               </a>
             </LinkHoverCard>
           );
@@ -307,6 +327,7 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
               className="inline-flex items-center gap-1 rounded-[2px] border border-[#0078d4] bg-[#0078d4] px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-[#106ebe] transition-colors"
             >
               {seg.s}
+              <ExternalLink className="h-3 w-3 shrink-0" />
             </a>
           );
         if (seg.t === 'option')
@@ -316,6 +337,35 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
               className="mx-0.5 inline-flex items-center gap-1 rounded border border-slate-300 bg-white px-1.5 py-0.5 align-middle font-sans text-xs font-medium text-slate-700 shadow-sm"
             >
               <Square className="h-2.5 w-2.5 shrink-0 text-slate-400" />
+              {seg.s}
+            </span>
+          );
+        if (seg.t === 'tag')
+          return (
+            <span
+              key={i}
+              className="mx-0.5 inline-flex items-center gap-1 align-middle text-slate-700"
+            >
+              {seg.icon === 'incognito' && (
+                <VenetianMask className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+              )}
+              <span className="font-medium">{seg.s}</span>
+            </span>
+          );
+        if (seg.t === 'status')
+          return (
+            <span
+              key={i}
+              className={cn(
+                'mx-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 align-middle text-xs font-semibold shadow-sm',
+                seg.tone === 'success'
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  : seg.tone === 'warning'
+                    ? 'border-amber-200 bg-amber-50 text-amber-700'
+                    : 'border-slate-200 bg-slate-50 text-slate-700'
+              )}
+            >
+              <BadgeCheck className="h-3.5 w-3.5 shrink-0" />
               {seg.s}
             </span>
           );
@@ -449,6 +499,43 @@ function EdgeBrowserMockup({ src, alt }: { src: string; alt: string }) {
 
 // ─── Note callout (unified: handles AWS and MS note formats) ──────────────────
 
+function PartnerCenterBreadcrumb({
+  items,
+}: {
+  items: { label: string; href?: string }[];
+}) {
+  return (
+    <Breadcrumb className="mx-1 inline-flex align-middle">
+      <BreadcrumbList className="gap-1 text-xs font-medium text-slate-500">
+        {items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          return (
+            <React.Fragment key={`${item.label}-${index}`}>
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage className="text-xs">{item.label}</BreadcrumbPage>
+                ) : item.href ? (
+                  <BreadcrumbLink
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-slate-500 hover:text-slate-900"
+                  >
+                    {item.label}
+                  </BreadcrumbLink>
+                ) : (
+                  <span className="text-xs text-slate-500">{item.label}</span>
+                )}
+              </BreadcrumbItem>
+              {!isLast && <BreadcrumbSeparator className="text-slate-400" />}
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
+
 function NoteCallout({ note }: { note: any }) {
   const configs: Record<
     string,
@@ -493,10 +580,22 @@ function NoteCallout({ note }: { note: any }) {
   };
 
   const cfg = configs[note.type] ?? configs['note'];
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    FileCheck,
+    BadgeCheck,
+    Fingerprint,
+    ShieldCheck,
+  };
+  const CustomIcon = note.icon ? iconMap[note.icon] : null;
+  const renderedIcon = CustomIcon ? (
+    <CustomIcon className="h-4 w-4 mt-0.5 shrink-0" />
+  ) : (
+    cfg.icon
+  );
 
   return (
     <div className={cn('flex gap-3 border px-4 py-1 text-sm', cfg.cls)}>
-      <span className={cfg.labelCls}>{cfg.icon}</span>
+      <span className={cfg.labelCls}>{renderedIcon}</span>
       <div className="flex-1 min-w-0">
         {note.title && (
           <p className={cn('font-semibold mb-0.5', cfg.labelCls)}>{note.title}</p>
@@ -533,13 +632,13 @@ function NoteCallout({ note }: { note: any }) {
         {note.paragraphs &&
           note.paragraphs.map((para: any, i: number) =>
             typeof para === 'string' ? (
-              <p key={i} className="leading-relaxed">
+              <div key={i} className={cn('leading-relaxed', i > 0 && 'mt-3')}>
                 {para}
-              </p>
+              </div>
             ) : (
-              <p key={i} className="leading-relaxed">
+              <div key={i} className={cn('leading-relaxed', i > 0 && 'mt-3')}>
                 <RenderMsSegs segs={para} />
-              </p>
+              </div>
             )
           )}
 
@@ -762,12 +861,16 @@ function StepSection({
         {step.officialGuide && (
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <Button
-              variant="outline"
+              variant={step.officialGuide.variant ?? 'outline'}
               size="sm"
               onClick={() => onOpenOfficialGuide(step.officialGuide)}
-              className="border-[var(--border)] bg-white/80 font-medium shadow-none hover:border-[#005657] hover:bg-white"
+              className={cn(
+                step.officialGuide.variant === 'link'
+                  ? 'h-auto px-0 text-sm font-medium text-[#005657] hover:text-[#003031]'
+                  : 'border-[var(--border)] bg-white/80 font-medium shadow-none hover:border-[#005657] hover:bg-white'
+              )}
             >
-              <BookOpen className="h-4 w-4" />
+              {step.officialGuide.variant !== 'link' && <BookOpen className="h-4 w-4" />}
               {step.officialGuide.buttonLabel}
             </Button>
           </div>
@@ -1086,6 +1189,8 @@ export default function MicrosoftCSPOnboardingPage() {
         contentClassName="p-0 overflow-y-auto"
       >
         {officialGuide?.id === 'maicpp' && <MaicppInfo />}
+        {officialGuide?.id === 'csp-overview' && <CspOverview />}
+        {officialGuide?.id === 'verification-help' && <VerificationHelp />}
       </Sheet>
 
       {/* ── Main layout ── */}

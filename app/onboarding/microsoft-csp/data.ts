@@ -4,7 +4,10 @@ export type Seg =
   | { t: 'text'; s: string }
   | { t: 'link'; s: string; href: string }
   | { t: 'btn'; s: string; href: string }
-  | { t: 'option'; s: string };
+  | { t: 'option'; s: string }
+  | { t: 'tag'; s: string; icon?: 'incognito' }
+  | { t: 'breadcrumb'; items: { label: string; href?: string }[] }
+  | { t: 'status'; s: string; tone?: 'success' | 'warning' | 'info' };
 
 export type RichBullet = {
   segs: Seg[];
@@ -44,7 +47,12 @@ export type Step = {
   assets?: { title: string; type: string }[];
   animations?: { description: string; payload: string[] }[];
   accordion?: { question?: string; title?: string; answer?: string; content?: string }[];
-  officialGuide?: { id: string; buttonLabel: string; sheetTitle: string };
+  officialGuide?: {
+    id: string;
+    buttonLabel: string;
+    sheetTitle: string;
+    variant?: 'outline' | 'link';
+  };
 };
 
 export type GuideData = {
@@ -137,9 +145,9 @@ export const guideData: GuideData = {
           bullets: [
             'En este punto es posible que nuestro equipo de altas te contacte para solicitarte información adicional en caso de ser preciso',
             'Si es el caso, recibirás un correo de altaclientes.es@tdsynnex.com',
-            'Si no recibes confirmación en un plazo de 48 horas laborales, puedes contactar con: Alta Clientes ≫ altaclientes.es@tdsynnex.com',
-            'Customer Success ≫ customersuccess.es@tdsynnex.com',
-            'Tu CSM ≫ encontrarás su correo en Growth Lab',
+            'Si no recibes confirmación en un plazo de 48 horas laborales, puedes contactar con: Alta Clientes: altaclientes.es@tdsynnex.com',
+            'Customer Success: customersuccess.es@tdsynnex.com',
+            'Tu CSM: encontrarás su correo en Growth Lab',
             'Una vez creada tu cuenta recibirás una confirmación por correo electrónico de Alta Clientes',
           ],
         },
@@ -348,28 +356,33 @@ export const guideData: GuideData = {
       title: 'Paso 2.2 | Alta en Microsoft Cloud Solutions Provider',
       summary:
         'Una vez registrado en el programa de MAICPP deberás completar el registro en el programa de Cloud Solutions Provider, el que te habilitará como revendedor indirecto de Microsoft CSP y te proporcionará un Partner Location Account ID (PLA).',
+      officialGuide: {
+        id: 'csp-overview',
+        buttonLabel: 'Ver más sobre el programa CSP',
+        sheetTitle: 'Introducción al programa Cloud Solutions Provider',
+      },
       instructions: [
         {
           title: 'Proceso de inscripción',
           bullets: [
             {
               segs: [
+                { t: 'text', s: 'Accede a la página de inscripción en el ' },
                 {
-                  t: 'text',
-                  s: 'Accede a la página de inscripción en el programa de Cloud Solutions Provider.',
+                  t: 'link',
+                  s: 'programa de Cloud Solutions Provider',
+                  href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/enrollment/introduction/partnership',
                 },
+                { t: 'text', s: '.' },
               ],
-              action: {
-                label: 'Ir a la página de registro',
-                href: 'https://partner.microsoft.com/en-us/membership/cloud-solution-provider',
-              },
             },
             {
               segs: [
-                {
-                  t: 'text',
-                  s: 'Selecciona la opción Resell / Revender del listado y pulsa en Next.',
-                },
+                { t: 'text', s: 'Selecciona la opción ' },
+                { t: 'option', s: 'Resell' },
+                { t: 'text', s: ' / ' },
+                { t: 'option', s: 'Revender' },
+                { t: 'text', s: ' del listado y pulsa en Next.' },
               ],
             },
             {
@@ -432,7 +445,13 @@ export const guideData: GuideData = {
       id: '2.3',
       title: 'Paso 2.3 | Validación de tu cuenta en CSP',
       summary:
-        'Tras inscribirte en el programa de MAICPP y CSP, Microsoft iniciará un proceso de validación de tu cuenta que durará entre 3 y 5 días laborables. Puedes consultar el estado de tu proceso de validación en cualquier momento en la sección ⚙ Account Settings › Legal Info (partner.microsoft.com).',
+        'Tras inscribirte en el programa de MAICPP y CSP, Microsoft iniciará un proceso de validación de tu cuenta que durará entre 3 y 5 días laborables. Puedes consultar el estado de tu proceso de validación en cualquier momento en la sección Account Settings > Legal Info.',
+      officialGuide: {
+        id: 'verification-help',
+        buttonLabel: '¿Necesitas ayuda para verificar tu cuenta?',
+        sheetTitle: 'Ayuda para verificar tu cuenta',
+        variant: 'link',
+      },
       instructions: [],
       notes: [
         {
@@ -443,11 +462,25 @@ export const guideData: GuideData = {
             [
               {
                 t: 'text',
-                s: 'Accede a ⚙ Account Settings › Agreements (partner.microsoft.com) y verifica que el contrato Microsoft Partner Agreement está firmado. Si está firmado lo verás como ',
+                s: 'Accede a ',
+              },
+              {
+                t: 'breadcrumb',
+                items: [
+                  {
+                    label: 'Account Settings',
+                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                  },
+                  { label: 'Agreements' },
+                ],
+              },
+              {
+                t: 'text',
+                s: ' y verifica que el contrato Microsoft Partner Agreement está firmado. Si está firmado lo verás como ',
               },
               {
                 t: 'link',
-                s: 'View ↗',
+                s: 'View',
                 href: 'https://partner.microsoft.com/en-us/dashboard/account/agreements',
               },
               {
@@ -456,7 +489,7 @@ export const guideData: GuideData = {
               },
               {
                 t: 'link',
-                s: 'Accept / View ↗',
+                s: 'Accept / View',
                 href: 'https://partner.microsoft.com/en-us/dashboard/account/agreements',
               },
               { t: 'text', s: '.' },
@@ -476,7 +509,30 @@ export const guideData: GuideData = {
             [
               {
                 t: 'text',
-                s: 'Accede a ⚙ Account Settings › Legal Info (partner.microsoft.com) y verifica que las secciones de Partner y Reseller aparecen con ✅ Authorized.',
+                s: 'Accede a ',
+              },
+              {
+                t: 'breadcrumb',
+                items: [
+                  {
+                    label: 'Account Settings',
+                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                  },
+                  { label: 'Legal Info' },
+                ],
+              },
+              {
+                t: 'text',
+                s: ' y verifica que las secciones de Partner y Reseller aparecen con estado ',
+              },
+              {
+                t: 'status',
+                s: 'Authorized',
+                tone: 'success',
+              },
+              {
+                t: 'text',
+                s: '.',
               },
             ],
             [
@@ -486,6 +542,11 @@ export const guideData: GuideData = {
               },
             ],
           ],
+          image: {
+            src: 'https://i.imgur.com/dZReKHj.png',
+            alt: 'Información legal en la sección Legal Info de Partner Center',
+            browser: 'edge',
+          },
         },
         {
           type: 'info',
@@ -495,7 +556,21 @@ export const guideData: GuideData = {
             [
               {
                 t: 'text',
-                s: 'Accede a ⚙ Account Settings › Identifiers (partner.microsoft.com) y pulsa sobre la pestaña CSP. Dentro de esta sección encontrarás tu Partner ID autorizado para revender Microsoft CSP.',
+                s: 'Accede a ',
+              },
+              {
+                t: 'breadcrumb',
+                items: [
+                  {
+                    label: 'Account Settings',
+                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                  },
+                  { label: 'Identifiers' },
+                ],
+              },
+              {
+                t: 'text',
+                s: ' y pulsa sobre la pestaña CSP. Dentro de esta sección encontrarás tu Partner ID autorizado para revender Microsoft CSP.',
               },
             ],
           ],
@@ -510,12 +585,7 @@ export const guideData: GuideData = {
           },
         },
       ],
-      links: [
-        {
-          label: 'Partner Center · Account Settings',
-          href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
-        },
-      ],
+      links: [],
     },
     {
       id: '2.4',
@@ -528,7 +598,9 @@ export const guideData: GuideData = {
           bullets: [
             {
               segs: [
-                { t: 'text', s: 'Abre una nueva ventana del navegador en modo incógnito.' },
+                { t: 'text', s: 'Abre una nueva ventana del navegador en ' },
+                { t: 'tag', s: 'modo incógnito', icon: 'incognito' },
+                { t: 'text', s: '.' },
               ],
             },
             {
@@ -576,8 +648,8 @@ export const guideData: GuideData = {
           ],
         },
         {
-          type: 'success',
-          text: 'Tras completar esta acción, en tu Partner Center › Customers › Indirect Providers verás a TD SYNNEX Spain, S.L.U. en el listado de tus proveedores indirectos.',
+          type: 'info',
+          text: 'Tras completar esta acción, en tu Partner Center > Customers > Indirect Providers verás a TD SYNNEX Spain, S.L.U. en el listado de tus proveedores indirectos.',
         },
         {
           type: 'note',
