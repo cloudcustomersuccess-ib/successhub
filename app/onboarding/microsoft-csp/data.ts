@@ -3,7 +3,8 @@
 export type Seg =
   | { t: 'text'; s: string }
   | { t: 'link'; s: string; href: string }
-  | { t: 'btn'; s: string; href: string };
+  | { t: 'btn'; s: string; href: string }
+  | { t: 'option'; s: string };
 
 export type RichBullet = {
   segs: Seg[];
@@ -43,6 +44,7 @@ export type Step = {
   assets?: { title: string; type: string }[];
   animations?: { description: string; payload: string[] }[];
   accordion?: { question?: string; title?: string; answer?: string; content?: string }[];
+  officialGuide?: { id: string; buttonLabel: string; sheetTitle: string };
 };
 
 export type GuideData = {
@@ -257,11 +259,11 @@ export const guideData: GuideData = {
           bullets: [
             {
               segs: [
-                { t: 'text', s: 'Accede al enlace del programa MAICPP: ' },
+                { t: 'text', s: 'Accede al enlace de registro en ' },
                 {
                   t: 'link',
-                  s: 'Get started here',
-                  href: 'https://partner.microsoft.com/en-us/membership',
+                  s: 'MAICPP',
+                  href: 'https://partner.microsoft.com/en-us/partnership',
                 },
               ],
             },
@@ -277,7 +279,11 @@ export const guideData: GuideData = {
             },
             {
               segs: [
-                { t: 'text', s: 'Selecciona la opción Partner / Asóciese de la lista.' },
+                { t: 'text', s: 'Selecciona la opción ' },
+                { t: 'option', s: 'Partner' },
+                { t: 'text', s: ' / ' },
+                { t: 'option', s: 'Asóciese' },
+                { t: 'text', s: ' de la lista.' },
               ],
             },
             {
@@ -319,6 +325,11 @@ export const guideData: GuideData = {
           ],
         },
       ],
+      officialGuide: {
+        id: 'maicpp',
+        buttonLabel: 'Ver más sobre el programa MAICPP',
+        sheetTitle: 'Introducción al programa Microsoft AI Cloud Partner Program',
+      },
       notes: [
         {
           type: 'info',

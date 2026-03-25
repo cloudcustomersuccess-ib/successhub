@@ -23,14 +23,22 @@ export function Sheet({
   panelClassName,
   contentClassName,
 }: SheetProps) {
-  // Lock body scroll when open
+  const panelRef = React.useRef<HTMLDivElement>(null);
+
+  // Stop wheel events from reaching Lenis (which listens on window) while
+  // still allowing native scroll inside the panel's overflow container.
   React.useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
+    if (!open || !panelRef.current) return;
+    const el = panelRef.current;
+
+    const stopWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+    };
+
+    // Non-passive so stopPropagation is fully honoured; no preventDefault so
+    // the browser can still scroll the overflow-y-auto content div natively.
+    el.addEventListener('wheel', stopWheel, { passive: false });
+    return () => el.removeEventListener('wheel', stopWheel);
   }, [open]);
 
   if (!open) return null;
@@ -44,13 +52,14 @@ export function Sheet({
       />
       {/* Panel */}
       <div
+        ref={panelRef}
         className={cn(
           'relative z-10 flex h-full w-72 flex-col bg-[var(--background)] shadow-xl',
           side === 'right' && 'ml-auto',
           panelClassName
         )}
       >
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--border)] px-4 py-3">
           <span className="text-sm font-semibold text-[var(--foreground)]">{title}</span>
           <button
             onClick={onClose}
@@ -59,7 +68,7 @@ export function Sheet({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className={cn('flex-1 overflow-y-auto px-4 py-4', contentClassName)}>
+        <div className={cn('min-h-0 flex-1 overflow-y-auto px-4 py-4', contentClassName)}>
           {children}
         </div>
       </div>
