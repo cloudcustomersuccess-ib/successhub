@@ -55,7 +55,7 @@ export default function GlobalHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[#f5f6f7]/95 backdrop-blur-sm">
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6">
         <div className="flex h-14 items-center gap-4">
 
@@ -114,7 +114,7 @@ export default function GlobalHeader() {
               <ChevronDown className="h-3 w-3" />
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-[var(--border)] bg-[var(--background)] shadow-lg py-1 z-50">
+              <div className="absolute right-0 top-full mt-1 z-50 w-36 rounded-lg border border-[var(--border)] bg-[#f5f6f7] py-1 shadow-lg">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}

@@ -7,7 +7,8 @@ export type Seg =
   | { t: 'option'; s: string }
   | { t: 'tag'; s: string; icon?: 'incognito' }
   | { t: 'breadcrumb'; items: { label: string; href?: string }[] }
-  | { t: 'status'; s: string; tone?: 'success' | 'warning' | 'info' };
+  | { t: 'status'; s: string; tone?: 'success' | 'warning' | 'info' }
+  | { t: 'ui-action'; s: string };
 
 export type RichBullet = {
   segs: Seg[];
@@ -41,11 +42,16 @@ export type Step = {
   title: string;
   summary?: string;
   prerequisites?: string[];
+  preNotes?: StepNote[];
   instructions?: Instruction[];
   notes?: StepNote[];
   links?: { label: string; href: string }[];
   assets?: { title: string; type: string }[];
-  animations?: { description: string; payload: string[] }[];
+  animations?: {
+    description: string;
+    payload: string[];
+    kind?: 'streamone-terms' | 'streamone-credentials' | 'streamone-csp-request';
+  }[];
   accordion?: { question?: string; title?: string; answer?: string; content?: string }[];
   officialGuide?: {
     id: string;
@@ -469,7 +475,7 @@ export const guideData: GuideData = {
                 items: [
                   {
                     label: 'Account Settings',
-                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                    href: 'https://partner.microsoft.com/dashboard/v2/account-settings/settings/agreements',
                   },
                   { label: 'Agreements' },
                 ],
@@ -516,7 +522,7 @@ export const guideData: GuideData = {
                 items: [
                   {
                     label: 'Account Settings',
-                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                    href: 'https://partner.microsoft.com/dashboard/v2/account-settings/organization/legalinfo#csp',
                   },
                   { label: 'Legal Info' },
                 ],
@@ -563,7 +569,7 @@ export const guideData: GuideData = {
                 items: [
                   {
                     label: 'Account Settings',
-                    href: 'https://partner.microsoft.com/en-us/dashboard/account/v3/settings/partnerprofile',
+                    href: 'https://partner.microsoft.com/dashboard/v2/account-settings/organization/identity',
                   },
                   { label: 'Identifiers' },
                 ],
@@ -592,6 +598,28 @@ export const guideData: GuideData = {
       title: 'Paso 2.4 | Indirect Reseller Relationship',
       summary:
         'Tras completar la inscripción en ambos programas y confirmar que tu cuenta está correctamente validada por el fabricante, deberás aceptar la relación entre TD SYNNEX Spain (Indirect Provider) y tu cuenta de Partner de Microsoft (Indirect Reseller).',
+      preNotes: [
+        {
+          type: 'warning',
+          icon: 'ShieldCheck',
+          title: 'Admin Agent',
+          text: 'Para aceptar esta invitación deberás disponer de un rol de Admin Agent en el Partner Center de Microsoft de tu organización. Revisa los roles y permisos existentes aquí.',
+          paragraphs: [
+            [
+              {
+                t: 'text',
+                s: 'Para aceptar esta invitación deberás disponer de un rol de Admin Agent en el Partner Center de Microsoft de tu organización. Revisa los roles y permisos existentes ',
+              },
+              {
+                t: 'link',
+                s: 'aquí',
+                href: 'https://learn.microsoft.com/en-us/partner-center/permissions-overview',
+              },
+              { t: 'text', s: '.' },
+            ],
+          ],
+        },
+      ],
       instructions: [
         {
           title: 'Aceptación de la relación',
@@ -628,32 +656,8 @@ export const guideData: GuideData = {
       ],
       notes: [
         {
-          type: 'warning',
-          icon: 'ShieldCheck',
-          title: 'Admin Agent',
-          text: 'Para aceptar esta invitación deberás disponer de un rol de Admin Agent en el Partner Center de Microsoft de tu organización. Revisa los roles y permisos existentes aquí.',
-          paragraphs: [
-            [
-              {
-                t: 'text',
-                s: 'Para aceptar esta invitación deberás disponer de un rol de Admin Agent en el Partner Center de Microsoft de tu organización. Revisa los roles y permisos existentes ',
-              },
-              {
-                t: 'link',
-                s: 'aquí',
-                href: 'https://learn.microsoft.com/en-us/partner-center/permissions-overview',
-              },
-              { t: 'text', s: '.' },
-            ],
-          ],
-        },
-        {
           type: 'info',
           text: 'Tras completar esta acción, en tu Partner Center > Customers > Indirect Providers verás a TD SYNNEX Spain, S.L.U. en el listado de tus proveedores indirectos.',
-        },
-        {
-          type: 'note',
-          text: 'Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez hayas aceptado la relación de revendedor indirecto.',
         },
       ],
       links: [],
@@ -682,13 +686,20 @@ export const guideData: GuideData = {
             'Accede al enlace proporcionado',
             'Revisa la información de tu organización',
             'Lee los términos y condiciones de StreamOne ION',
-            'Acepta los términos y pulsa en Next para firmar el contrato',
+            {
+              segs: [
+                { t: 'text', s: 'Acepta los términos y pulsa en ' },
+                { t: 'ui-action', s: 'Next' },
+                { t: 'text', s: ' para firmar el contrato' },
+              ],
+            },
           ],
         },
       ],
       animations: [
         {
           description: 'Correo electrónico esperado',
+          kind: 'streamone-terms',
           payload: [
             'Subject: TD SYNNEX - Streamone Ion Platform Agreement Terms - Please Acknowledge',
             'From: no-reply@bryter.io',
@@ -700,10 +711,6 @@ export const guideData: GuideData = {
           type: 'info',
           text: 'Puedes reenviar este correo al representante legal de tu organización para su firma.',
         },
-        {
-          type: 'note',
-          text: 'Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez hayas aceptado los términos y condiciones de StreamOne® ION.',
-        },
       ],
       links: [],
     },
@@ -712,24 +719,27 @@ export const guideData: GuideData = {
       title: 'Paso 3.2 | Generación de tu perfil en StreamOne® ION',
       summary:
         'Tras aceptar los términos y condiciones de la plataforma, en cuestión de horas (dentro del horario laboral) recibirás un correo electrónico de businessexperiencesu@techdata.com con la confirmación de tu cuenta.',
-      instructions: [
-        {
-          title: '',
-          bullets: [
-            'Para generar tu contraseña por primera vez, accede a StreamOne® ION y haz un Forgot Password',
-          ],
-        },
-      ],
       animations: [
         {
-          description: 'Correo electrónico esperado',
-          payload: [
-            'Subject: StreamOne® ION Platform Credentials',
-            'From: businessexperiencesu@techdata.com',
+          description: 'Proceso de acceso a StreamOne® ION',
+          kind: 'streamone-credentials',
+          payload: [],
+        },
+      ],
+      notes: [
+        {
+          type: 'danger',
+          title: '¿Aún no has recibido tus credenciales?',
+          paragraphs: [
+            'Si aún no has recibido la confirmación de tu cuenta en StreamOne® ION, por favor, asegúrate de haber aceptado correctamente los términos y condiciones del paso 3.1.',
+            [
+              { t: 'text', s: 'También puedes contactar con ' },
+              { t: 'link', s: 'customersuccess.es@tdsynnex.com', href: 'mailto:customersuccess.es@tdsynnex.com' },
+              { t: 'text', s: ' para obtener más información.' },
+            ],
           ],
         },
       ],
-      notes: [],
       links: [
         {
           label: 'StreamOne® ION',
@@ -742,6 +752,12 @@ export const guideData: GuideData = {
       title: 'Paso 3.3 | Solicitud del programa de Microsoft CSP',
       summary:
         'Una vez dispongas de tus credenciales de StreamOne ION, solicita el programa de Microsoft CSP.',
+      preNotes: [
+        {
+          type: 'warning',
+          text: 'Asegúrate de solicitar el programa correcto, ya que encontrarás programas con nombre similares. Solicitar el programa equivocado declinará la solicitud de manera automática.',
+        },
+      ],
       instructions: [
         {
           title: 'Solicitud del programa',
@@ -755,16 +771,14 @@ export const guideData: GuideData = {
           ],
         },
       ],
-      notes: [
+      animations: [
         {
-          type: 'warning',
-          text: 'Asegúrate de solicitar el programa correcto, ya que encontrarás programas con nombre similares. Solicitar el programa equivocado declinará la solicitud de manera automática.',
-        },
-        {
-          type: 'note',
-          text: 'Si utilizas Growth Lab, recuerda Marcar este paso como completado una vez hayas solicitado el programa de Microsoft CSP.',
+          description: 'SOLICITUD DEL PROGRAMA EN STREAMONE ION',
+          kind: 'streamone-csp-request',
+          payload: [],
         },
       ],
+      notes: [],
       links: [
         {
           label: 'StreamOne® ION',

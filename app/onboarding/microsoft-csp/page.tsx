@@ -22,7 +22,6 @@ import {
   RotateCcw,
   ChevronRight,
   Copy,
-  Check,
   BookOpen,
   ShieldCheck,
   Square,
@@ -36,9 +35,13 @@ import { guideData as msGuideData } from './data';
 import type { AnyBullet, Seg } from './data';
 import { MaicppInfo } from './maicpp-info';
 import { CspOverview } from './csp-overview';
+import { StreamoneTermsAnimation } from './streamone-terms-animation';
+import { StreamoneCredentialsAnimation } from './streamone-credentials-animation';
+import { StreamoneCspRequestAnimation } from './streamone-csp-request-animation';
 import { VerificationHelp } from './verification-help';
 import { cn } from '@/lib/utils';
 import { Accordion } from '@/components/ui/accordion';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -344,10 +347,10 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
           return (
             <span
               key={i}
-              className="mx-0.5 inline-flex items-center gap-1 align-middle text-slate-700"
+              className="mx-0.5 inline-flex items-center gap-1 align-baseline whitespace-nowrap text-slate-700"
             >
               {seg.icon === 'incognito' && (
-                <VenetianMask className="h-3.5 w-3.5 shrink-0 text-slate-500" />
+                <VenetianMask className="relative top-px h-3.5 w-3.5 shrink-0 text-slate-500" />
               )}
               <span className="font-medium">{seg.s}</span>
             </span>
@@ -369,6 +372,16 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
               {seg.s}
             </span>
           );
+        if (seg.t === 'ui-action')
+          return (
+            <span
+              key={i}
+              className="mx-0.5 inline-flex items-center rounded-md px-2 py-0.5 align-middle text-xs font-semibold text-white"
+              style={{ backgroundColor: '#005657' }}
+            >
+              {seg.s}
+            </span>
+          );
         return null;
       })}
     </>
@@ -378,28 +391,45 @@ function RenderMsSegs({ segs }: { segs: Seg[] }) {
 // ─── Copy button (MS steps) ───────────────────────────────────────────────────
 
 function CopyButton({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setShowNotice(true);
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => setShowNotice(false), 4000);
     });
   };
 
   return (
-    <button
-      onClick={handleCopy}
-      className={cn(
-        'mt-2 inline-flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium transition-colors',
-        copied
-          ? 'border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-          : 'border-[var(--border)] bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-[#005657]'
+    <>
+      <button
+        onClick={handleCopy}
+        className="mt-2 inline-flex items-center gap-1.5 rounded border border-[var(--border)] bg-[var(--muted)] px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:border-[#005657] hover:text-[var(--foreground)]"
+      >
+        <Copy className="h-3.5 w-3.5" />
+        {label}
+      </button>
+
+      {showNotice && (
+        <div className="fixed right-6 top-6 z-50 w-[calc(100vw-2rem)] max-w-md">
+          <Alert className="shadow-xl">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
+            <AlertTitle>Enlace copiado</AlertTitle>
+            <AlertDescription>
+              Ya puedes pegarlo en una ventana en modo incógnito del navegador.
+            </AlertDescription>
+          </Alert>
+        </div>
       )}
-    >
-      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {copied ? '¡Copiado!' : label}
-    </button>
+    </>
   );
 }
 
@@ -560,9 +590,9 @@ function NoteCallout({ note }: { note: any }) {
       label: 'Tip',
     },
     danger: {
-      icon: <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />,
-      cls: 'bg-red-50 border-red-300 text-red-900 dark:bg-red-950/40 dark:border-red-700 dark:text-red-200',
-      labelCls: 'text-red-700 dark:text-red-400',
+      icon: <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />,
+      cls: 'rounded-none border-x-0 border-y-0 border-l-2 border-l-amber-500 bg-transparent text-slate-800',
+      labelCls: 'text-amber-700',
       label: 'Importante',
     },
     error: {
@@ -673,6 +703,16 @@ function NoteCallout({ note }: { note: any }) {
 // ─── Email preview ────────────────────────────────────────────────────────────
 
 function EmailPreview({ anim, label }: { anim: any; label: string }) {
+  if (anim.kind === 'streamone-terms') {
+    return <StreamoneTermsAnimation label={label} />;
+  }
+  if (anim.kind === 'streamone-credentials') {
+    return <StreamoneCredentialsAnimation label={label} />;
+  }
+  if (anim.kind === 'streamone-csp-request') {
+    return <StreamoneCspRequestAnimation label={label} />;
+  }
+
   return (
     <div className="overflow-hidden rounded-none border border-[var(--border)] bg-transparent">
       <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-2">
@@ -704,41 +744,6 @@ function AssetChip({ asset }: { asset: any }) {
   );
 }
 
-// ─── TOC item ─────────────────────────────────────────────────────────────────
-
-function TocItem({
-  step,
-  isActive,
-  onClick,
-}: {
-  step: any;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  const shortTitle = step.title.replace(/^(Paso|Step|Passo)\s+[\d.]+\s*\|\s*/i, '');
-
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'group flex w-full items-center border-l px-4 py-2.5 text-left transition-colors',
-        isActive
-          ? 'border-l-[#005657] text-slate-900'
-          : 'border-l-transparent text-slate-500 hover:border-l-slate-300 hover:text-slate-800'
-      )}
-    >
-      <span
-        className={cn(
-          'truncate text-[14px] leading-6 tracking-[-0.01em]',
-          isActive ? 'font-medium' : 'font-normal'
-        )}
-      >
-        {shortTitle}
-      </span>
-    </button>
-  );
-}
-
 // ─── TOC sidebar ──────────────────────────────────────────────────────────────
 
 function TableOfContents({
@@ -757,45 +762,94 @@ function TableOfContents({
   const mainSteps = guideData.steps.filter((s: any) => !s.id.includes('.'));
   const subSteps = guideData.steps.filter((s: any) => s.id.includes('.'));
 
+  // Derive the active phase from the active sub-step (e.g. '3.2' → '3')
+  const activePhaseId = activeStep ? activeStep.split('.')[0] : mainSteps[0]?.id;
+
   return (
-    <nav className="flex flex-col gap-1">
-      {mainSteps.map((phase: any) => {
-        const phaseSubSteps = subSteps.filter((s: any) =>
-          s.id.startsWith(phase.id + '.')
-        );
-        const phaseShortTitle = phase.title.replace(
-          /^(Paso|Step|Passo)\s+\d+\.\s*/i,
-          ''
-        );
+    <nav className="flex flex-col">
+      {mainSteps.map((phase: any, phaseIndex: number) => {
+        const phaseSubSteps = subSteps.filter((s: any) => s.id.startsWith(phase.id + '.'));
+        const phaseShortTitle = phase.title.replace(/^(Paso|Step|Passo)\s+\d+\.\s*/i, '');
+        const isExpanded = activePhaseId === phase.id;
 
         return (
-          <div key={phase.id} className="mb-5">
-            <p className="mb-2 px-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-              {phaseShortTitle}
-            </p>
-            <div className="space-y-0.5 border-l border-slate-200/80">
-              {phaseSubSteps.map((step: any) => (
-                <TocItem
-                  key={step.id}
-                  step={step}
-                  isActive={activeStep === step.id}
-                  onClick={() => scrollToStep(step.id)}
-                />
-              ))}
+          <div key={phase.id} className={cn('border-b border-slate-100 last:border-b-0', phaseIndex === 0 && 'border-t border-slate-100')}>
+            {/* Section header — clickable, scrolls to first sub-step */}
+            <button
+              onClick={() => {
+                const first = phaseSubSteps[0];
+                if (first) scrollToStep(first.id);
+              }}
+              className={cn(
+                'flex w-full items-center gap-2.5 px-3 py-3 text-left transition-colors',
+                isExpanded ? 'text-[#005657]' : 'text-slate-500 hover:text-slate-800'
+              )}
+            >
+              <span className={cn(
+                'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors',
+                isExpanded ? 'bg-[#005657] text-white' : 'bg-slate-100 text-slate-500'
+              )}>
+                {phase.id}
+              </span>
+              <span className={cn(
+                'text-[13px] leading-snug tracking-[-0.01em] transition-colors',
+                isExpanded ? 'font-semibold' : 'font-medium'
+              )}>
+                {phaseShortTitle}
+              </span>
+            </button>
+
+            {/* Sub-steps — collapse/expand with smooth height transition */}
+            <div className={cn(
+              'overflow-hidden transition-all duration-300 ease-in-out',
+              isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+            )}>
+              <div className="ml-[22px] border-l border-slate-200 pb-2">
+                {phaseSubSteps.map((step: any) => {
+                  const shortTitle = step.title.replace(/^(Paso|Step|Passo)\s+[\d.]+\s*\|\s*/i, '');
+                  const isActive = activeStep === step.id;
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => scrollToStep(step.id)}
+                      className={cn(
+                        'flex w-full items-start gap-2 border-l-2 px-3 py-2 text-left transition-colors',
+                        isActive
+                          ? 'border-l-[#005657] text-slate-900'
+                          : 'border-l-transparent text-slate-400 hover:border-l-slate-300 hover:text-slate-700'
+                      )}
+                    >
+                      <span className={cn(
+                        'mt-0.5 shrink-0 text-[10px] font-semibold tabular-nums',
+                        isActive ? 'text-[#005657]' : 'text-slate-400'
+                      )}>
+                        {step.id}
+                      </span>
+                      <span className={cn(
+                        'text-[13px] leading-5',
+                        isActive ? 'font-medium text-slate-900' : 'font-normal'
+                      )}>
+                        {shortTitle}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         );
       })}
 
-      <Separator className="my-4" />
-
-      <button
-        onClick={resetProgress}
-        className="flex w-full items-center gap-2 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500 transition-colors hover:text-slate-800"
-      >
-        <RotateCcw className="h-3.5 w-3.5" />
-        {uiText.resetProgress}
-      </button>
+      <div className="mt-4">
+        <Separator className="mb-4" />
+        <button
+          onClick={resetProgress}
+          className="flex w-full items-center gap-2 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500 transition-colors hover:text-slate-800"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          {uiText.resetProgress}
+        </button>
+      </div>
     </nav>
   );
 }
@@ -891,6 +945,15 @@ function StepSection({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Notes before instructions */}
+      {step.preNotes && step.preNotes.length > 0 && (
+        <div className="mb-6 space-y-4">
+          {step.preNotes.map((note: any, i: number) => (
+            <NoteCallout key={i} note={note} />
+          ))}
         </div>
       )}
 
@@ -1150,12 +1213,10 @@ export default function MicrosoftCSPOnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6f7] text-[var(--foreground)]">
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-48 bg-[linear-gradient(180deg,rgba(0,86,87,0.035),transparent)]" />
-
+    <div className="min-h-screen bg-white text-[var(--foreground)]">
       {/* ── Sticky progress bar ── */}
       {showProgress && (
-        <div className="sticky top-0 z-40 border-b border-[var(--border)] bg-[#f5f6f7]/90 backdrop-blur-xl">
+        <div className="sticky top-0 z-40 border-b border-[var(--border)] bg-[#f5f6f7]/95 backdrop-blur-xl">
           <div className="mx-auto flex max-w-screen-xl items-center gap-4 px-4 py-2 sm:px-6">
             <button
               onClick={() => setSheetOpen(true)}
@@ -1185,7 +1246,7 @@ export default function MicrosoftCSPOnboardingPage() {
         onClose={() => setOfficialGuide(null)}
         side="right"
         title={officialGuide?.sheetTitle ?? ''}
-        panelClassName="ml-auto w-[92vw] max-w-2xl bg-[#f5f6f7]"
+        panelClassName="ml-auto w-[92vw] max-w-2xl bg-white"
         contentClassName="p-0 overflow-y-auto"
       >
         {officialGuide?.id === 'maicpp' && <MaicppInfo />}
@@ -1195,11 +1256,11 @@ export default function MicrosoftCSPOnboardingPage() {
 
       {/* ── Main layout ── */}
       <div className="relative mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-        <div className="lg:flex lg:gap-12">
+        <div className="lg:flex lg:gap-10 xl:gap-12">
 
           {/* ── Desktop sidebar ── */}
-          <aside className="hidden lg:block w-56 xl:w-64 shrink-0">
-            <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto py-12 pr-4">
+          <aside className="hidden lg:block w-64 xl:w-72 shrink-0">
+            <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto py-12 pr-3 lg:-ml-4 xl:-ml-6">
               <LinkHoverCard href="/onboarding" title={uiText.backToOnboarding}>
                 <a
                   href="/onboarding"
@@ -1217,7 +1278,7 @@ export default function MicrosoftCSPOnboardingPage() {
           <main className="min-w-0 flex-1 py-12 lg:py-12">
 
             {/* ── Hero ── */}
-            <div className="mb-12 border-b border-[var(--border)] pb-10">
+            <div className="mb-12 border-b border-[var(--border)] pb-10 font-sans">
               {/* Mobile back */}
               <LinkHoverCard href="/onboarding" title={uiText.backToOnboarding}>
                 <a
@@ -1344,8 +1405,65 @@ export default function MicrosoftCSPOnboardingPage() {
             )}
 
             {/* Bottom spacer */}
-            <div className="h-24" />
+            <div className="h-32" />
           </main>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/88 backdrop-blur-md">
+        <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-2.5 text-[11px] text-slate-500 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/TD%20SYNNEX_Logo_Standard.png"
+              alt="TD SYNNEX"
+              className="h-4 w-auto object-contain opacity-90"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <LinkHoverCard
+              href="https://www.tdsynnex.com/content/dam/tds-site/tds-site-shared/docs/privacy/2025/global/2025-global-privacy-statement-spanish.pdf"
+              title="Política de privacidad"
+            >
+              <a
+                href="https://www.tdsynnex.com/content/dam/tds-site/tds-site-shared/docs/privacy/2025/global/2025-global-privacy-statement-spanish.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-[#005657]"
+              >
+                Política de privacidad
+              </a>
+            </LinkHoverCard>
+
+            <LinkHoverCard
+              href="https://eu.tdsynnex.com/terms-conditions&utm_source=publicwebpage&utm_medium=footer&utm_tactic=corporate&utm_campaign=rrhh&utm_date=febrero_23"
+              title="Términos y condiciones"
+            >
+              <a
+                href="https://eu.tdsynnex.com/terms-conditions&utm_source=publicwebpage&utm_medium=footer&utm_tactic=corporate&utm_campaign=rrhh&utm_date=febrero_23"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-[#005657]"
+              >
+                Términos y condiciones
+              </a>
+            </LinkHoverCard>
+
+            <LinkHoverCard
+              href="https://eu.tdsynnex.com/ethics-and-compliance"
+              title="Ética y Compliance"
+            >
+              <a
+                href="https://eu.tdsynnex.com/ethics-and-compliance"
+                target="_blank"
+                rel="noreferrer"
+                className="transition-colors hover:text-[#005657]"
+              >
+                Ética y Compliance
+              </a>
+            </LinkHoverCard>
+          </div>
         </div>
       </div>
     </div>
